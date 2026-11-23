@@ -1,0 +1,13 @@
+{
+  "subject": "math",
+  "skills": [
+    { "code": "math.mult.2", "label": { "ru": "Таблица умножения на 2", "uz": "2 ga ko'paytirish jadvali", "en": "Multiplication by 2" }, "parent": null, "prerequisites": [] },
+    { "code": "math.mult.3", "label": { "ru": "Таблица умножения на 3", "uz": "3 ga ko'paytirish jadvali", "en": "Multiplication by 3" }, "parent": null, "prerequisites": ["math.mult.2"] },
+    { "code": "math.mult.4", "label": { "ru": "Таблица умножения на 4", "uz": "4 ga ko'paytirish jadvali", "en": "Multiplication by 4" }, "parent": null, "prerequisites": ["math.mult.2"] },
+    { "code": "math.mult.5", "label": { "ru": "Таблица умножения на 5", "uz": "5 ga ko'paytirish jadvali", "en": "Multiplication by 5" }, "parent": null, "prerequisites": [] },
+    { "code": "math.mult.6", "label": { "ru": "Таблица умножения на 6", "uz": "6 ga ko'paytirish jadvali", "en": "Multiplication by 6" }, "parent": null, "prerequisites": ["math.mult.3", "math.mult.2"] },
+    { "code": "math.mult.7", "label": { "ru": "Таблица умножения на 7", "uz": "7 ga ko'paytirish jadvali", "en": "Multiplication by 7" }, "parent": null, "prerequisites": ["math.mult.3", "math.mult.4"] },
+    { "code": "math.mult.8", "label": { "ru": "Таблица умножения на 8", "uz": "8 ga ko'paytirish jadvali", "en": "Multiplication by 8" }, "parent": null, "prerequisites": ["math.mult.4"] },
+    { "code": "math.mult.9", "label": { "ru": "Таблица умножения на 9", "uz": "9 ga ko'paytirish jadvali", "en": "Multiplication by 9" }, "parent": null, "prerequisites": ["math.mult.3"] }
+  ]
+}

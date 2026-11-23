@@ -1,0 +1,74 @@
+{
+  "common": {
+    "loading": "Yuklanmoqda…",
+    "error": "Xatolik yuz berdi",
+    "retry": "Qayta urinish",
+    "done": "Tayyor",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "delete": "O'chirish",
+    "confirm": "Tasdiqlash",
+    "back": "Orqaga",
+    "next": "Keyingi",
+    "skip": "O'tkazib yuborish"
+  },
+  "auth": {
+    "signInWithApple": "Apple orqali kirish",
+    "signInWithEmail": "Email orqali kirish",
+    "email": "Email",
+    "password": "Parol",
+    "signIn": "Kirish",
+    "signUp": "Ro'yxatdan o'tish",
+    "forgotPassword": "Parolni unutdingizmi?"
+  },
+  "parent": {
+    "home": "Bosh sahifa",
+    "children": "Bolalar",
+    "schedule": "Jadval",
+    "rewards": "Mukofotlar",
+    "summary": "Hafta xulosasi",
+    "addChild": "Bola qo'shish",
+    "linkDevice": "Qurilma ulash",
+    "unlinkDevice": "Qurilmani uzish",
+    "deleteAccount": "Hisob va barcha ma'lumotlarni o'chirish",
+    "confirmDeleteAccount": "Bu amalni bekor qilib bo'lmaydi. Oila ma'lumotlari o'chiriladi.",
+    "sessionQuestion": "Mashg'ulot bo'ldimi?",
+    "sessionYes": "Ha",
+    "sessionSkip": "O'tkazib yuborildi",
+    "approveGoal": "Maqsadni tasdiqlash",
+    "declineGoal": "Rad etish"
+  },
+  "child": {
+    "today": "Bugun",
+    "missions": "Vazifalar",
+    "goals": "Maqsadlarim",
+    "rewards": "Do'kon",
+    "xp": "XP",
+    "coins": "tanga",
+    "missionComplete": "Vazifa bajarildi!",
+    "dailyLimitReached": "Bugun shu yetarli! Zo'rsiz!",
+    "requestReward": "Mukofot so'rash",
+    "proposeGoal": "Maqsad taklif qilish",
+    "howWasIt": "Qanday o'tdi?",
+    "reflection": "Bir necha so'z yozing…"
+  },
+  "learning": {
+    "study": "O'qish",
+    "multiplication": "Ko'paytirish jadvali",
+    "english": "Ingliz tili",
+    "correct": "To'g'ri!",
+    "incorrect": "Uncha emas. Yana urining!",
+    "selfCorrected": "Zo'r, xatoni o'zing topdingiz!",
+    "hint": "Ko'rsatma",
+    "question": "Savol",
+    "checkAnswer": "Javobni tekshirish"
+  },
+  "rewards": {
+    "xpLabel": "{{amount}} XP",
+    "coinsLabel": "{{amount}} tanga",
+    "level": "{{level}}-daraja",
+    "rewardRequested": "So'rov ota-onaga yuborildi",
+    "rewardApproved": "Ota-ona tasdiqladi!",
+    "rewardDeclined": "Ota-ona hozircha ruxsat bermadi"
+  }
+}

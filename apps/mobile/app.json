@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Saya",
+    "slug": "saya",
+    "scheme": "saya",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": [
+      "ios"
+    ],
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFEF0"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "uz.saya.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Используется для голосовых ответов",
+        "NSSpeechRecognitionUsageDescription": "Используется для голосового ввода"
+      }
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#4F46E5"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFFEF0",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200
+        }
+      ],
+      "expo-font",
+      "expo-sqlite"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "TODO_AFTER_EAS_INIT"
+      }
+    }
+  }
+}

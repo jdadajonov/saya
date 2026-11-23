@@ -1,0 +1,74 @@
+{
+  "common": {
+    "loading": "Загрузка…",
+    "error": "Что-то пошло не так",
+    "retry": "Попробовать снова",
+    "done": "Готово",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "confirm": "Подтвердить",
+    "back": "Назад",
+    "next": "Далее",
+    "skip": "Пропустить"
+  },
+  "auth": {
+    "signInWithApple": "Войти через Apple",
+    "signInWithEmail": "Войти по email",
+    "email": "Email",
+    "password": "Пароль",
+    "signIn": "Войти",
+    "signUp": "Зарегистрироваться",
+    "forgotPassword": "Забыли пароль?"
+  },
+  "parent": {
+    "home": "Главная",
+    "children": "Дети",
+    "schedule": "Расписание",
+    "rewards": "Награды",
+    "summary": "Итог недели",
+    "addChild": "Добавить ребёнка",
+    "linkDevice": "Привязать устройство",
+    "unlinkDevice": "Отвязать устройство",
+    "deleteAccount": "Удалить аккаунт и все данные",
+    "confirmDeleteAccount": "Это действие нельзя отменить. Все данные семьи будут удалены.",
+    "sessionQuestion": "Тренировка состоялась?",
+    "sessionYes": "Да",
+    "sessionSkip": "Пропуск",
+    "approveGoal": "Одобрить цель",
+    "declineGoal": "Отклонить"
+  },
+  "child": {
+    "today": "Сегодня",
+    "missions": "Миссии",
+    "goals": "Мои цели",
+    "rewards": "Витрина",
+    "xp": "XP",
+    "coins": "монет",
+    "missionComplete": "Миссия выполнена!",
+    "dailyLimitReached": "На сегодня всё! Ты молодец!",
+    "requestReward": "Попросить награду",
+    "proposeGoal": "Предложить цель",
+    "howWasIt": "Как прошло?",
+    "reflection": "Напиши пару слов…"
+  },
+  "learning": {
+    "study": "Учёба",
+    "multiplication": "Таблица умножения",
+    "english": "Английский",
+    "correct": "Правильно!",
+    "incorrect": "Не совсем. Попробуй ещё!",
+    "selfCorrected": "Молодец, нашёл ошибку сам!",
+    "hint": "Подсказка",
+    "question": "Вопрос",
+    "checkAnswer": "Проверить"
+  },
+  "rewards": {
+    "xpLabel": "{{amount}} XP",
+    "coinsLabel": "{{amount}} монет",
+    "level": "Уровень {{level}}",
+    "rewardRequested": "Запрос отправлен родителю",
+    "rewardApproved": "Родитель одобрил!",
+    "rewardDeclined": "Родитель пока не может"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(pnpm install *)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(export PATH=\"/opt/homebrew/bin:$HOME/.local/share/pnpm:$HOME/.npm-global/bin:/usr/local/bin:$PATH\")",
+      "Bash(pnpm --version)",
+      "Bash(export PATH=\"/opt/homebrew/bin:$PATH\")",
+      "Bash(npx expo *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm -r --filter=!@saya/mobile exec pnpm add -D typescript@~6.0.3)",
+      "Bash(pnpm -r --filter=@saya/core typecheck)",
+      "Bash(pnpm -r --filter=@saya/api typecheck)",
+      "Bash(pnpm -r --filter=@saya/i18n typecheck)",
+      "Bash(pnpm -r --filter=!@saya/mobile typecheck)",
+      "Bash(pnpm -r --filter=@saya/mobile typecheck)",
+      "Bash(node --input-type=module --eval \"import './eslint.config.js'\")",
+      "Bash(pnpm exec *)",
+      "Bash(npx eslint *)",
+      "Bash(pnpm turbo *)",
+      "Bash(node -e \"const pkg = require\\('./node_modules/turbo/package.json'\\); console.log\\('turbo', pkg.version\\)\")",
+      "Bash(node -e \"const pkg = require\\('./node_modules/typescript/package.json'\\); console.log\\('typescript', pkg.version\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(git -C /Users/jdadajonov/Saya add -A -- ':!*.pdf' :!node_modules :!.expo :!pnpm-lock.yaml)",
+      "Bash(git -C /Users/jdadajonov/Saya status --short)"
+    ]
+  }
+}

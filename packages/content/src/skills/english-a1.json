@@ -1,0 +1,11 @@
+{
+  "subject": "english",
+  "skills": [
+    { "code": "en.a1.animals", "label": { "ru": "Животные", "uz": "Hayvonlar", "en": "Animals" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.school", "label": { "ru": "Школа", "uz": "Maktab", "en": "School" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.family", "label": { "ru": "Семья", "uz": "Oila", "en": "Family" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.food", "label": { "ru": "Еда", "uz": "Ovqat", "en": "Food" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.colors", "label": { "ru": "Цвета", "uz": "Ranglar", "en": "Colors" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.sports", "label": { "ru": "Спорт", "uz": "Sport", "en": "Sports" }, "parent": null, "prerequisites": [] }
+  ]
+}

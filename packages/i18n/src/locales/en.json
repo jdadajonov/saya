@@ -1,0 +1,74 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "done": "Done",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip"
+  },
+  "auth": {
+    "signInWithApple": "Sign in with Apple",
+    "signInWithEmail": "Sign in with Email",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "forgotPassword": "Forgot password?"
+  },
+  "parent": {
+    "home": "Home",
+    "children": "Children",
+    "schedule": "Schedule",
+    "rewards": "Rewards",
+    "summary": "Weekly Summary",
+    "addChild": "Add Child",
+    "linkDevice": "Link Device",
+    "unlinkDevice": "Unlink Device",
+    "deleteAccount": "Delete account and all data",
+    "confirmDeleteAccount": "This action cannot be undone. All family data will be deleted.",
+    "sessionQuestion": "Did the session happen?",
+    "sessionYes": "Yes",
+    "sessionSkip": "Skip",
+    "approveGoal": "Approve goal",
+    "declineGoal": "Decline"
+  },
+  "child": {
+    "today": "Today",
+    "missions": "Missions",
+    "goals": "My Goals",
+    "rewards": "Shop",
+    "xp": "XP",
+    "coins": "coins",
+    "missionComplete": "Mission complete!",
+    "dailyLimitReached": "That's it for today! Great job!",
+    "requestReward": "Request reward",
+    "proposeGoal": "Suggest a goal",
+    "howWasIt": "How did it go?",
+    "reflection": "Write a few words…"
+  },
+  "learning": {
+    "study": "Study",
+    "multiplication": "Multiplication Table",
+    "english": "English",
+    "correct": "Correct!",
+    "incorrect": "Not quite. Try again!",
+    "selfCorrected": "Great, you found your own mistake!",
+    "hint": "Hint",
+    "question": "Question",
+    "checkAnswer": "Check Answer"
+  },
+  "rewards": {
+    "xpLabel": "{{amount}} XP",
+    "coinsLabel": "{{amount}} coins",
+    "level": "Level {{level}}",
+    "rewardRequested": "Request sent to parent",
+    "rewardApproved": "Parent approved!",
+    "rewardDeclined": "Parent said not now"
+  }
+}
