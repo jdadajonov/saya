@@ -2,10 +2,20 @@
   "subject": "english",
   "skills": [
     { "code": "en.a1.animals", "label": { "ru": "Животные", "uz": "Hayvonlar", "en": "Animals" }, "parent": null, "prerequisites": [] },
-    { "code": "en.a1.school", "label": { "ru": "Школа", "uz": "Maktab", "en": "School" }, "parent": null, "prerequisites": [] },
     { "code": "en.a1.family", "label": { "ru": "Семья", "uz": "Oila", "en": "Family" }, "parent": null, "prerequisites": [] },
     { "code": "en.a1.food", "label": { "ru": "Еда", "uz": "Ovqat", "en": "Food" }, "parent": null, "prerequisites": [] },
     { "code": "en.a1.colors", "label": { "ru": "Цвета", "uz": "Ranglar", "en": "Colors" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.body", "label": { "ru": "Тело", "uz": "Tana", "en": "Body" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.home", "label": { "ru": "Дом", "uz": "Uy", "en": "Home" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.school", "label": { "ru": "Школа", "uz": "Maktab", "en": "School" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.time", "label": { "ru": "Время", "uz": "Vaqt", "en": "Time" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.actions", "label": { "ru": "Действия", "uz": "Harakatlar", "en": "Actions" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.adjectives", "label": { "ru": "Прилагательные", "uz": "Sifatlar", "en": "Adjectives" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.places", "label": { "ru": "Места", "uz": "Joylar", "en": "Places" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.nature", "label": { "ru": "Природа", "uz": "Tabiat", "en": "Nature" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.transport", "label": { "ru": "Транспорт", "uz": "Transport", "en": "Transport" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.clothes", "label": { "ru": "Одежда", "uz": "Kiyim", "en": "Clothes" }, "parent": null, "prerequisites": [] },
+    { "code": "en.a1.numbers", "label": { "ru": "Числа", "uz": "Raqamlar", "en": "Numbers" }, "parent": null, "prerequisites": [] },
     { "code": "en.a1.sports", "label": { "ru": "Спорт", "uz": "Sport", "en": "Sports" }, "parent": null, "prerequisites": [] }
   ]
 }
