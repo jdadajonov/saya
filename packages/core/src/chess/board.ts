@@ -62,7 +62,15 @@ export function isCheck(fen: string): boolean {
 export function makeMove(fen: string, move: string): string | null {
   const chess = new Chess(fen);
   try {
-    chess.move(move);
+    // Handle UCI format (e.g., "e2e4") by converting to object format
+    if (move.length === 4 || move.length === 5) {
+      const from = move.slice(0, 2);
+      const to = move.slice(2, 4);
+      const promotion = move.length === 5 ? move[4] : undefined;
+      chess.move({ from, to, promotion });
+    } else {
+      chess.move(move);
+    }
     return chess.fen();
   } catch {
     return null;
@@ -72,7 +80,15 @@ export function makeMove(fen: string, move: string): string | null {
 export function isValidMove(fen: string, move: string): boolean {
   const chess = new Chess(fen);
   try {
-    chess.move(move);
+    // Handle UCI format (e.g., "e2e4") by converting to object format
+    if (move.length === 4 || move.length === 5) {
+      const from = move.slice(0, 2);
+      const to = move.slice(2, 4);
+      const promotion = move.length === 5 ? move[4] : undefined;
+      chess.move({ from, to, promotion });
+    } else {
+      chess.move(move);
+    }
     return true;
   } catch {
     return false;
