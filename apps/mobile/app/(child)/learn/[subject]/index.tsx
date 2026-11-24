@@ -290,7 +290,7 @@ function ChessMapScreen({ subject, theme, router, starsQuery, t }: {
                 width: 56,
                 height: 56,
                 borderRadius: 28,
-                backgroundColor: unlocked ? theme.palette.violet : theme.colors.disabled,
+                backgroundColor: unlocked ? theme.colors.masteryBadge : theme.colors.disabled,
                 borderWidth: theme.borderWidth.regular,
                 borderColor: unlocked ? theme.colors.ink : theme.colors.disabled,
                 alignItems: 'center',

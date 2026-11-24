@@ -79,7 +79,7 @@ export default function SubjectListScreen() {
             width: 64,
             height: 64,
             borderRadius: 32,
-            backgroundColor: subject.tintKey === 'coral' ? theme.colors.primary : subject.tintKey === 'violet' ? theme.palette.violet : theme.colors.secondary,
+            backgroundColor: subject.tintKey === 'coral' ? theme.colors.primary : subject.tintKey === 'violet' ? theme.colors.masteryBadge : theme.colors.secondary,
             borderWidth: theme.borderWidth.regular,
             borderColor: theme.colors.ink,
             alignItems: 'center',

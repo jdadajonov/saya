@@ -109,7 +109,7 @@ export default function ChessBotScreen() {
                   width: 56,
                   height: 56,
                   borderRadius: 28,
-                  backgroundColor: theme.palette.violet,
+                  backgroundColor: theme.colors.masteryBadge,
                   borderWidth: theme.borderWidth.regular,
                   borderColor: theme.colors.ink,
                   alignItems: 'center',
