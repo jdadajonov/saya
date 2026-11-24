@@ -1,0 +1,249 @@
+{
+  "subject": "chess",
+  "lessons": [
+    {
+      "skillCode": "chess.identify",
+      "pieces": [
+        {
+          "piece": "k",
+          "name": { "ru": "Король", "uz": "Shoh", "en": "King" },
+          "description": {
+            "ru": "Самая важная фигура. Если король в мате - игра окончена!",
+            "uz": "Eng muhim figura. Agar shoh motda bo'lsa - o'yin tugadi!",
+            "en": "The most important piece. If the king is checkmated - game over!"
+          }
+        },
+        {
+          "piece": "q",
+          "name": { "ru": "Ферзь", "uz": "Vazir", "en": "Queen" },
+          "description": {
+            "ru": "Самая сильная фигура. Ходит как ладья и слон вместе!",
+            "uz": "Eng kuchli figura. Rux va fil kabi yuradi!",
+            "en": "The most powerful piece. Moves like rook and bishop combined!"
+          }
+        },
+        {
+          "piece": "r",
+          "name": { "ru": "Ладья", "uz": "Rux", "en": "Rook" },
+          "description": {
+            "ru": "Ходит по прямым линиям - вверх, вниз, влево, вправо.",
+            "uz": "To'g'ri chiziqlarda yuradi - yuqoriga, pastga, chapga, o'ngga.",
+            "en": "Moves in straight lines - up, down, left, right."
+          }
+        },
+        {
+          "piece": "b",
+          "name": { "ru": "Слон", "uz": "Fil", "en": "Bishop" },
+          "description": {
+            "ru": "Ходит по диагоналям. Один слон только по белым, другой - только по чёрным.",
+            "uz": "Diagonal bo'ylab yuradi. Bir fil faqat oq, ikkinchisi faqat qora kataklarda.",
+            "en": "Moves diagonally. One bishop stays on light squares, the other on dark."
+          }
+        },
+        {
+          "piece": "n",
+          "name": { "ru": "Конь", "uz": "Ot", "en": "Knight" },
+          "description": {
+            "ru": "Ходит буквой 'Г' и может перепрыгивать через другие фигуры!",
+            "uz": "'L' harfi shaklida yuradi va boshqa figuralar ustidan o'tishi mumkin!",
+            "en": "Moves in an 'L' shape and can jump over other pieces!"
+          }
+        },
+        {
+          "piece": "p",
+          "name": { "ru": "Пешка", "uz": "Piyoda", "en": "Pawn" },
+          "description": {
+            "ru": "Маленькая, но важная. Ходит вперёд, бьёт по диагонали.",
+            "uz": "Kichik, lekin muhim. Oldinga yuradi, diagonal bo'ylab uradi.",
+            "en": "Small but important. Moves forward, captures diagonally."
+          }
+        }
+      ]
+    },
+    {
+      "skillCode": "chess.rook",
+      "intro": {
+        "ru": "Ладья ходит по вертикали и горизонтали на любое количество клеток.",
+        "uz": "Rux vertikal va gorizontal bo'ylab istalgan sondagi kataklarga yurishi mumkin.",
+        "en": "The rook moves any number of squares horizontally or vertically."
+      },
+      "exercises": [
+        {
+          "type": "chess.movement",
+          "fen": "k7/8/8/8/3R4/8/8/7K w - - 0 1",
+          "pieceSquare": "d4",
+          "hint": { "ru": "Ладья ходит прямо!", "uz": "Rux to'g'ri yuradi!", "en": "The rook moves straight!" }
+        },
+        {
+          "type": "chess.capture",
+          "fen": "k7/3p4/8/8/3R4/8/3p4/7K w - - 0 1",
+          "attackerSquare": "d4",
+          "targetSquares": ["d7", "d2"],
+          "hint": { "ru": "Съешь обе пешки!", "uz": "Ikkala piyodani ye!", "en": "Capture both pawns!" }
+        }
+      ]
+    },
+    {
+      "skillCode": "chess.bishop",
+      "intro": {
+        "ru": "Слон ходит по диагонали на любое количество клеток.",
+        "uz": "Fil diagonal bo'ylab istalgan sondagi kataklarga yurishi mumkin.",
+        "en": "The bishop moves any number of squares diagonally."
+      },
+      "exercises": [
+        {
+          "type": "chess.movement",
+          "fen": "k7/8/8/8/3B4/8/8/7K w - - 0 1",
+          "pieceSquare": "d4",
+          "hint": { "ru": "Слон ходит наискосок!", "uz": "Fil qiyshiq yuradi!", "en": "The bishop moves diagonally!" }
+        },
+        {
+          "type": "chess.capture",
+          "fen": "k7/8/1p3p2/8/3B4/8/1p3p2/7K w - - 0 1",
+          "attackerSquare": "d4",
+          "targetSquares": ["b6", "f6", "b2", "f2"],
+          "hint": { "ru": "Съешь все пешки по диагонали!", "uz": "Barcha piyodalarni diagonal bo'ylab ye!", "en": "Capture all pawns diagonally!" }
+        }
+      ]
+    },
+    {
+      "skillCode": "chess.queen",
+      "intro": {
+        "ru": "Ферзь - самая сильная фигура! Он ходит как ладья И как слон вместе.",
+        "uz": "Vazir - eng kuchli figura! U rux VA fil kabi yuradi.",
+        "en": "The queen is the most powerful piece! It moves like a rook AND bishop combined."
+      },
+      "exercises": [
+        {
+          "type": "chess.movement",
+          "fen": "k7/8/8/8/3Q4/8/8/7K w - - 0 1",
+          "pieceSquare": "d4",
+          "hint": { "ru": "Ферзь ходит во все стороны!", "uz": "Vazir barcha tomonlarga yuradi!", "en": "The queen moves in all directions!" }
+        },
+        {
+          "type": "chess.capture",
+          "fen": "k7/3p4/1p3p2/8/3Q4/8/1p3p2/7K w - - 0 1",
+          "attackerSquare": "d4",
+          "targetSquares": ["d7", "b6", "f6", "b2", "f2"],
+          "hint": { "ru": "Используй силу ферзя!", "uz": "Vazir kuchidan foydalan!", "en": "Use the queen's power!" }
+        }
+      ]
+    },
+    {
+      "skillCode": "chess.knight",
+      "intro": {
+        "ru": "Конь - особенная фигура! Он ходит буквой 'Г' и перепрыгивает через другие фигуры.",
+        "uz": "Ot - maxsus figura! U 'L' harfi shaklida yuradi va boshqa figuralar ustidan o'tadi.",
+        "en": "The knight is special! It moves in an 'L' shape and jumps over other pieces."
+      },
+      "exercises": [
+        {
+          "type": "chess.movement",
+          "fen": "k7/8/8/8/3N4/8/8/7K w - - 0 1",
+          "pieceSquare": "d4",
+          "hint": { "ru": "Конь прыгает буквой Г!", "uz": "Ot 'L' shaklida sakraydi!", "en": "The knight jumps in an L!" }
+        },
+        {
+          "type": "chess.capture",
+          "fen": "k7/8/2p1p3/1p3p2/3N4/1p3p2/2p1p3/7K w - - 0 1",
+          "attackerSquare": "d4",
+          "targetSquares": ["c6", "e6", "b5", "f5", "b3", "f3", "c2", "e2"],
+          "hint": { "ru": "Конь бьёт только на клетках буквы Г!", "uz": "Ot faqat 'L' shaklida uradi!", "en": "Knight captures only in L-shape!" }
+        }
+      ]
+    },
+    {
+      "skillCode": "chess.pawn",
+      "intro": {
+        "ru": "Пешка ходит вперёд, но бьёт по диагонали. С начальной позиции может пойти на 2 клетки.",
+        "uz": "Piyoda oldinga yuradi, lekin diagonal bo'ylab uradi. Boshlang'ich pozitsiyadan 2 katak yurishi mumkin.",
+        "en": "Pawns move forward but capture diagonally. From starting position, they can move 2 squares."
+      },
+      "exercises": [
+        {
+          "type": "chess.movement",
+          "fen": "k7/8/8/8/8/8/3P4/7K w - - 0 1",
+          "pieceSquare": "d2",
+          "hint": { "ru": "Пешка может пойти на 1 или 2 клетки вперёд!", "uz": "Piyoda 1 yoki 2 katak oldinga yurishi mumkin!", "en": "Pawn can move 1 or 2 squares forward!" }
+        },
+        {
+          "type": "chess.capture",
+          "fen": "k7/8/8/8/2p1p3/3P4/8/7K w - - 0 1",
+          "attackerSquare": "d3",
+          "targetSquares": ["c4", "e4"],
+          "hint": { "ru": "Пешка бьёт по диагонали!", "uz": "Piyoda diagonal bo'ylab uradi!", "en": "Pawn captures diagonally!" }
+        }
+      ]
+    },
+    {
+      "skillCode": "chess.king",
+      "intro": {
+        "ru": "Король ходит на 1 клетку в любую сторону. Береги его - если король в мате, ты проиграл!",
+        "uz": "Shoh istalgan tomonga 1 katak yuradi. Uni asra - agar shoh motda bo'lsa, yutqazasan!",
+        "en": "The king moves 1 square in any direction. Protect it - if the king is checkmated, you lose!"
+      },
+      "exercises": [
+        {
+          "type": "chess.movement",
+          "fen": "k7/8/8/8/3K4/8/8/8 w - - 0 1",
+          "pieceSquare": "d4",
+          "hint": { "ru": "Король ходит на 1 клетку!", "uz": "Shoh 1 katak yuradi!", "en": "The king moves 1 square!" }
+        }
+      ]
+    },
+    {
+      "skillCode": "chess.check",
+      "intro": {
+        "ru": "Шах - это атака на короля. При шахе нужно защитить короля. Мат - это шах, от которого нет защиты!",
+        "uz": "Shox - bu shohga hujum. Shox bo'lganda shohni himoya qilish kerak. Mot - bu himoyasiz shox!",
+        "en": "Check is an attack on the king. You must defend when in check. Checkmate is check with no defense!"
+      },
+      "exercises": [
+        {
+          "type": "chess.mate1",
+          "fen": "6k1/5ppp/8/8/8/8/8/R3K3 w - - 0 1",
+          "solution": "Ra8#",
+          "hint": { "ru": "Поставь мат ладьёй!", "uz": "Rux bilan mot qo'y!", "en": "Checkmate with the rook!" }
+        }
+      ]
+    },
+    {
+      "skillCode": "chess.special",
+      "intro": {
+        "ru": "Рокировка - особый ход короля и ладьи. Взятие на проходе - пешка бьёт пешку, которая только что прошла мимо.",
+        "uz": "Qal'alash - shoh va ruxning maxsus yurishi. O'tib olish - piyoda hozirgina o'tib ketgan piyodani uradi.",
+        "en": "Castling is a special king-rook move. En passant is when a pawn captures a pawn that just passed by."
+      },
+      "exercises": []
+    },
+    {
+      "skillCode": "chess.mate1",
+      "intro": {
+        "ru": "Мат в 1 ход - найди единственный ход, который заканчивает игру!",
+        "uz": "1 yurishda mot - o'yinni tugatadigan yagona yurishni top!",
+        "en": "Mate in 1 - find the only move that ends the game!"
+      },
+      "puzzleSource": "puzzles-easy.json",
+      "puzzleFilter": { "themes": ["mateIn1"], "maxRating": 800 }
+    },
+    {
+      "skillCode": "chess.tactics",
+      "intro": {
+        "ru": "Тактика - это комбинации, которые дают преимущество. Вилки, связки, открытые атаки!",
+        "uz": "Taktika - bu ustunlik beradigan kombinatsiyalar. Vilkalar, bog'lamlar, ochiq hujumlar!",
+        "en": "Tactics are combinations that give an advantage. Forks, pins, discovered attacks!"
+      },
+      "puzzleSource": "puzzles-medium.json",
+      "puzzleFilter": { "themes": ["fork", "pin", "discoveredAttack"], "maxRating": 1200 }
+    },
+    {
+      "skillCode": "chess.play",
+      "intro": {
+        "ru": "Теперь ты готов играть! Выбери уровень сложности и попробуй обыграть бота.",
+        "uz": "Endi o'ynashga tayyorsan! Qiyinlik darajasini tanla va botni yengishga harakat qil.",
+        "en": "Now you're ready to play! Choose difficulty and try to beat the bot."
+      },
+      "botLevels": [1, 2, 3, 4, 5]
+    }
+  ]
+}

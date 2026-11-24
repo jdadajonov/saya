@@ -1,0 +1,77 @@
+{
+  "subject": "chess",
+  "skills": [
+    {
+      "code": "chess.identify",
+      "label": { "ru": "Узнай фигуры", "uz": "Figuralarni tanish", "en": "Know the Pieces" },
+      "parent": null,
+      "prerequisites": []
+    },
+    {
+      "code": "chess.rook",
+      "label": { "ru": "Ладья", "uz": "Rux", "en": "The Rook" },
+      "parent": null,
+      "prerequisites": ["chess.identify"]
+    },
+    {
+      "code": "chess.bishop",
+      "label": { "ru": "Слон", "uz": "Fil", "en": "The Bishop" },
+      "parent": null,
+      "prerequisites": ["chess.rook"]
+    },
+    {
+      "code": "chess.queen",
+      "label": { "ru": "Ферзь", "uz": "Vazir", "en": "The Queen" },
+      "parent": null,
+      "prerequisites": ["chess.bishop"]
+    },
+    {
+      "code": "chess.knight",
+      "label": { "ru": "Конь", "uz": "Ot", "en": "The Knight" },
+      "parent": null,
+      "prerequisites": ["chess.queen"]
+    },
+    {
+      "code": "chess.pawn",
+      "label": { "ru": "Пешка", "uz": "Piyoda", "en": "The Pawn" },
+      "parent": null,
+      "prerequisites": ["chess.knight"]
+    },
+    {
+      "code": "chess.king",
+      "label": { "ru": "Король", "uz": "Shoh", "en": "The King" },
+      "parent": null,
+      "prerequisites": ["chess.pawn"]
+    },
+    {
+      "code": "chess.check",
+      "label": { "ru": "Шах и мат", "uz": "Shox va mot", "en": "Check and Checkmate" },
+      "parent": null,
+      "prerequisites": ["chess.king"]
+    },
+    {
+      "code": "chess.special",
+      "label": { "ru": "Особые ходы", "uz": "Maxsus yurishlar", "en": "Special Moves" },
+      "parent": null,
+      "prerequisites": ["chess.check"]
+    },
+    {
+      "code": "chess.mate1",
+      "label": { "ru": "Мат в 1 ход", "uz": "1 yurishda mot", "en": "Mate in 1" },
+      "parent": null,
+      "prerequisites": ["chess.special"]
+    },
+    {
+      "code": "chess.tactics",
+      "label": { "ru": "Тактика", "uz": "Taktika", "en": "Tactics" },
+      "parent": null,
+      "prerequisites": ["chess.mate1"]
+    },
+    {
+      "code": "chess.play",
+      "label": { "ru": "Играй с ботом", "uz": "Bot bilan o'yna", "en": "Play vs Bot" },
+      "parent": null,
+      "prerequisites": ["chess.tactics"]
+    }
+  ]
+}
