@@ -114,7 +114,17 @@ function CardDispatcher({
     );
   }
 
-  if (exerciseTypeId === 'chess.mate1' || exerciseTypeId === 'chess.puzzle') {
+  if (exerciseTypeId === 'chess.mate1') {
+    return (
+      <PuzzleCard
+        payload={payload as unknown as MateInOnePayload}
+        onAnswer={onAnswer}
+        isMateInOne={true}
+      />
+    );
+  }
+
+  if (exerciseTypeId === 'chess.puzzle') {
     return (
       <PuzzleCard
         payload={payload as unknown as PuzzlePayload}
