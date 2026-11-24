@@ -82,6 +82,10 @@
     "chessCheckmate": "Шах и мат!",
     "chessNotCheckmate": "Это не мат. Попробуй ещё!",
     "chess": {
+      "identify": "Узнай фигуры",
+      "mateInOne": "Мат в 1 ход",
+      "tactics": "Тактика",
+      "playVsBot": "Играй с ботом",
       "identifyPrompt": "Какая это фигура?",
       "movementPrompt": "Нажми на все клетки, куда может пойти фигура",
       "capturePrompt": "Съешь все фигуры! ({{count}} шт.)",

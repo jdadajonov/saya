@@ -16,6 +16,11 @@ import type {
   WordMatchPayload,
   SpellItPayload,
   ListenMatchPayload,
+  IdentifyPiecePayload,
+  MovementPayload,
+  CapturePayload,
+  MateInOnePayload,
+  PuzzlePayload,
 } from '@saya/core';
 import { useMissionQuery, useSubmitAttempts } from '../../../../src/features/learning/hooks/use-mission';
 import { useLearningStore } from '../../../../src/features/learning/stores/learning-store';
@@ -26,6 +31,12 @@ import { ListenMatchCard } from '../../../../src/features/learning/components/li
 import { ComboBadge } from '../../../../src/features/learning/components/combo-badge';
 import { MissionProgress } from '../../../../src/features/learning/components/mission-progress';
 import { MissionComplete } from '../../../../src/features/learning/components/mission-complete';
+import {
+  IdentifyCard,
+  MovementCard,
+  CaptureCard,
+  PuzzleCard,
+} from '../../../../src/features/learning/components/chess';
 
 type GameMode = 'basic' | 'timed' | 'cumulative';
 
@@ -71,6 +82,42 @@ function CardDispatcher({
     return (
       <ListenMatchCard
         payload={payload as unknown as ListenMatchPayload}
+        onAnswer={onAnswer}
+      />
+    );
+  }
+
+  if (exerciseTypeId === 'chess.identify') {
+    return (
+      <IdentifyCard
+        payload={payload as unknown as IdentifyPiecePayload}
+        onAnswer={onAnswer}
+      />
+    );
+  }
+
+  if (exerciseTypeId === 'chess.movement') {
+    return (
+      <MovementCard
+        payload={payload as unknown as MovementPayload}
+        onAnswer={onAnswer}
+      />
+    );
+  }
+
+  if (exerciseTypeId === 'chess.capture') {
+    return (
+      <CaptureCard
+        payload={payload as unknown as CapturePayload}
+        onAnswer={onAnswer}
+      />
+    );
+  }
+
+  if (exerciseTypeId === 'chess.mate1' || exerciseTypeId === 'chess.puzzle') {
+    return (
+      <PuzzleCard
+        payload={payload as unknown as PuzzlePayload}
         onAnswer={onAnswer}
       />
     );

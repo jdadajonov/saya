@@ -77,6 +77,10 @@
     "chessMovement": "Piece Movement",
     "chessSelectSquares": "Select all squares",
     "chess": {
+      "identify": "Identify Pieces",
+      "mateInOne": "Mate in 1",
+      "tactics": "Tactics",
+      "playVsBot": "Play vs Bot",
       "identifyPrompt": "Which piece is this?",
       "movementPrompt": "Tap all squares where the piece can move",
       "capturePrompt": "Capture all pieces! ({{count}} total)",

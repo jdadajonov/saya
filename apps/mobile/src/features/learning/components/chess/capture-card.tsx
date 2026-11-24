@@ -22,7 +22,7 @@ type FeedbackState = 'idle' | 'correct' | 'wrong';
 
 interface CaptureCardProps {
   payload: CapturePayload;
-  onAnswer: (answer: string[], correct: boolean, responseMs: number) => void;
+  onAnswer: (answer: string, correct: boolean, responseMs: number) => void;
   disabled?: boolean;
 }
 
@@ -89,7 +89,7 @@ export function CaptureCard({ payload, onAnswer, disabled }: CaptureCardProps) {
                   withSpring(1, { damping: 12, stiffness: 200 })
                 );
                 const responseMs = Date.now() - startTime;
-                setTimeout(() => onAnswer(newHistory, true, responseMs), 800);
+                setTimeout(() => onAnswer(JSON.stringify(newHistory), true, responseMs), 800);
               }
             } else {
               void Haptics.selectionAsync();

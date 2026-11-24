@@ -25,7 +25,7 @@ type FeedbackState = 'idle' | 'correct' | 'wrong';
 
 interface PuzzleCardProps {
   payload: MateInOnePayload | PuzzlePayload;
-  onAnswer: (answer: string[], correct: boolean, responseMs: number) => void;
+  onAnswer: (answer: string, correct: boolean, responseMs: number) => void;
   disabled?: boolean;
   isMateInOne?: boolean;
 }
@@ -110,7 +110,7 @@ export function PuzzleCard({
                 withSpring(1, { damping: 12, stiffness: 200 })
               );
               const responseMs = Date.now() - startTime;
-              setTimeout(() => onAnswer(newHistory, true, responseMs), 800);
+              setTimeout(() => onAnswer(JSON.stringify(newHistory), true, responseMs), 800);
             } else if (!isMateInOne) {
               const puzzlePayload = payload as PuzzlePayload;
               const expectedMoves = puzzlePayload.moves;
@@ -130,20 +130,20 @@ export function PuzzleCard({
                       withSpring(1, { damping: 12, stiffness: 200 })
                     );
                     const responseMs = Date.now() - startTime;
-                    setTimeout(() => onAnswer(newHistory, true, responseMs), 800);
+                    setTimeout(() => onAnswer(JSON.stringify(newHistory), true, responseMs), 800);
                   }
                 } else {
                   setFeedback('wrong');
                   void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                   const responseMs = Date.now() - startTime;
-                  setTimeout(() => onAnswer(newHistory, false, responseMs), 1000);
+                  setTimeout(() => onAnswer(JSON.stringify(newHistory), false, responseMs), 1000);
                 }
               }
             } else {
               setFeedback('wrong');
               void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               const responseMs = Date.now() - startTime;
-              setTimeout(() => onAnswer(newHistory, false, responseMs), 1000);
+              setTimeout(() => onAnswer(JSON.stringify(newHistory), false, responseMs), 1000);
             }
 
             setCheckSquare(findCheckSquare(newFen));

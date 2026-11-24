@@ -77,6 +77,10 @@
     "chessMovement": "Figuralar harakati",
     "chessSelectSquares": "Barcha kataklarni tanlang",
     "chess": {
+      "identify": "Figuralarni tanish",
+      "mateInOne": "1 yurishda mot",
+      "tactics": "Taktika",
+      "playVsBot": "Bot bilan o'yna",
       "identifyPrompt": "Bu qaysi figura?",
       "movementPrompt": "Figura yurishi mumkin bo'lgan barcha kataklarni bosing",
       "capturePrompt": "Barcha figuralarni yeng! ({{count}} ta)",

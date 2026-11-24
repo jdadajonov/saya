@@ -17,7 +17,7 @@ type FeedbackState = 'idle' | 'correct' | 'wrong';
 
 interface MovementCardProps {
   payload: MovementPayload;
-  onAnswer: (answer: ChessSquare[], correct: boolean, responseMs: number) => void;
+  onAnswer: (answer: string, correct: boolean, responseMs: number) => void;
   disabled?: boolean;
 }
 
@@ -83,7 +83,7 @@ export function MovementCard({ payload, onAnswer, disabled }: MovementCardProps)
 
     const responseMs = Date.now() - startTime;
     setTimeout(
-      () => onAnswer(selectedArray, allCorrect, responseMs),
+      () => onAnswer(JSON.stringify(selectedArray), allCorrect, responseMs),
       allCorrect ? 600 : 1500
     );
   };

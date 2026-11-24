@@ -54,6 +54,26 @@ const ENGLISH_TOPICS: EnglishTopic[] = [
   { code: 'en.a1.sports', label: 'Спорт', icon: '⚽', wordCount: 15 },
 ];
 
+interface ChessSkill {
+  code: string;
+  labelKey: string;
+  icon: string;
+  isPlayMode?: boolean;
+}
+
+const CHESS_SKILLS: ChessSkill[] = [
+  { code: 'chess.identify', labelKey: 'chess.identify', icon: '👀' },
+  { code: 'chess.rook', labelKey: 'chessPieces.rook', icon: '♜' },
+  { code: 'chess.bishop', labelKey: 'chessPieces.bishop', icon: '♝' },
+  { code: 'chess.queen', labelKey: 'chessPieces.queen', icon: '♛' },
+  { code: 'chess.knight', labelKey: 'chessPieces.knight', icon: '♞' },
+  { code: 'chess.pawn', labelKey: 'chessPieces.pawn', icon: '♟' },
+  { code: 'chess.king', labelKey: 'chessPieces.king', icon: '♚' },
+  { code: 'chess.mate1', labelKey: 'chess.mateInOne', icon: '♔' },
+  { code: 'chess.tactics', labelKey: 'chess.tactics', icon: '🧩' },
+  { code: 'chess.play', labelKey: 'chess.playVsBot', icon: '🤖', isPlayMode: true },
+];
+
 function generateMathLevels(): LevelConfig[] {
   return [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
     number: n,
@@ -212,6 +232,107 @@ function MathMapScreen({ subject, theme, router, starsQuery, t }: {
   );
 }
 
+function ChessMapScreen({ subject, theme, router, starsQuery, t }: {
+  subject: string;
+  theme: ReturnType<typeof useTheme>;
+  router: ReturnType<typeof useRouter>;
+  starsQuery: ReturnType<typeof useSkillStarsQuery>;
+  t: ReturnType<typeof useTranslation>['t'];
+}) {
+  const getStars = (code: string) => (starsQuery.data?.get(code) ?? 0) as 0 | 1 | 2 | 3;
+
+  const isUnlocked = (index: number) => {
+    if (index === 0) return true;
+    const prevSkill = CHESS_SKILLS[index - 1]!;
+    return getStars(prevSkill.code) >= 1;
+  };
+
+  const handleSelectSkill = (skill: ChessSkill) => {
+    if (skill.isPlayMode) {
+      router.push(`/(child)/learn/${subject}/bot`);
+    } else {
+      router.push(`/(child)/learn/${subject}/mission?skillCode=${skill.code}`);
+    }
+  };
+
+  return (
+    <ScrollView
+      contentContainerStyle={{
+        paddingHorizontal: theme.spacing[4],
+        paddingBottom: 40,
+      }}
+    >
+      <View style={{ gap: theme.spacing[3] }}>
+        {CHESS_SKILLS.map((skill, index) => {
+          const stars = getStars(skill.code);
+          const unlocked = isUnlocked(index);
+
+          return (
+            <TouchableOpacity
+              key={skill.code}
+              disabled={!unlocked}
+              onPress={() => handleSelectSkill(skill)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: unlocked
+                  ? (stars > 0 ? theme.tints.sun : theme.colors.surface)
+                  : theme.colors.disabled,
+                borderRadius: theme.borderRadius.card,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: unlocked ? theme.colors.ink : theme.colors.disabled,
+                padding: theme.spacing[4],
+                opacity: unlocked ? 1 : 0.6,
+                ...theme.shadows.card,
+              }}
+            >
+              <View style={{
+                width: 56,
+                height: 56,
+                borderRadius: 28,
+                backgroundColor: unlocked ? theme.palette.violet : theme.colors.disabled,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: unlocked ? theme.colors.ink : theme.colors.disabled,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: theme.spacing[4],
+              }}>
+                <Text style={{ fontSize: 28 }}>
+                  {unlocked ? skill.icon : '🔒'}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: '700',
+                  color: theme.colors.ink,
+                  marginBottom: theme.spacing[1],
+                }}>
+                  {t(`learning.${skill.labelKey}`)}
+                </Text>
+                {unlocked && (
+                  <View style={{ flexDirection: 'row', gap: 2 }}>
+                    {[1, 2, 3].map((s) => (
+                      <Text key={s} style={{ fontSize: 14 }}>
+                        {stars >= s ? '⭐' : '☆'}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+              </View>
+              <Text style={{
+                fontSize: 24,
+                color: theme.colors.ink,
+                fontWeight: '300',
+              }}>›</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </ScrollView>
+  );
+}
+
 function EnglishMapScreen({ subject, theme, router, starsQuery }: {
   subject: string;
   theme: ReturnType<typeof useTheme>;
@@ -305,8 +426,13 @@ export default function MissionMapScreen() {
   const starsQuery = useSkillStarsQuery(subject ?? 'math.mul');
 
   const isEnglish = subject?.startsWith('en.');
-  const headerTitle = isEnglish ? t('learning.english') : t('learning.multiplication');
-  const headerEmoji = isEnglish ? '🇬🇧' : '🧮';
+  const isChess = subject === 'chess';
+  const headerTitle = isChess
+    ? t('learning.chess')
+    : isEnglish
+    ? t('learning.english')
+    : t('learning.multiplication');
+  const headerEmoji = isChess ? '♟️' : isEnglish ? '🇬🇧' : '🧮';
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -346,6 +472,8 @@ export default function MissionMapScreen() {
 
       {starsQuery.isLoading ? (
         <ActivityIndicator color={theme.colors.primary} style={{ marginTop: 48 }} />
+      ) : isChess ? (
+        <ChessMapScreen subject={subject!} theme={theme} router={router} starsQuery={starsQuery} t={t} />
       ) : isEnglish ? (
         <EnglishMapScreen subject={subject!} theme={theme} router={router} starsQuery={starsQuery} />
       ) : (
