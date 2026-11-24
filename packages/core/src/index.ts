@@ -10,3 +10,4 @@ export * from './subjects/english/words';
 export * from './subjects/english/index';
 export * from './activities/index';
 export * from './goals/index';
+export * from './chess/index';
