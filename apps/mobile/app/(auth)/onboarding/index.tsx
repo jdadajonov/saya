@@ -4,24 +4,26 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../src/ui/theme-provider';
 import { useCreateFamily } from '../../../src/features/family/hooks/use-family';
+import { supabase } from '../../../src/platform/supabase';
 
 const LOCALES = [
-  { value: 'ru', label: 'Русский' },
-  { value: 'uz', label: "O'zbekcha" },
-  { value: 'en', label: 'English' },
+  { value: 'ru', label: '🇷🇺 Русский' },
+  { value: 'uz', label: "🇺🇿 O'zbekcha" },
+  { value: 'en', label: '🇬🇧 English' },
 ];
 
 export default function CreateFamilyScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const theme = useTheme();
   const createFamily = useCreateFamily();
 
   const [name, setName] = useState('');
@@ -37,35 +39,115 @@ export default function CreateFamilyScreen() {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.replace('/(auth)/login');
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.title} accessibilityRole="header">
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        backgroundColor: theme.colors.background,
+        paddingHorizontal: theme.spacing[6],
+        paddingTop: 80,
+        paddingBottom: 48,
+      }}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={{ fontSize: 48, textAlign: 'center', marginBottom: theme.spacing[2] }}>
+        👨‍👩‍👧‍👦
+      </Text>
+      <Text
+        style={{
+          fontSize: theme.textStyles.title.fontSize,
+          fontWeight: '900',
+          color: theme.colors.ink,
+          textAlign: 'center',
+          marginBottom: theme.spacing[6],
+        }}
+        accessibilityRole="header"
+      >
         {t('onboarding.createFamily')}
       </Text>
 
-      <Text style={styles.label}>{t('onboarding.familyNameLabel')}</Text>
+      <Text
+        style={{
+          fontSize: theme.textStyles.caption.fontSize,
+          fontWeight: '700',
+          color: theme.colors.textSecondary,
+          marginBottom: theme.spacing[2],
+          textTransform: 'uppercase',
+          letterSpacing: 0.5,
+        }}
+      >
+        {t('onboarding.familyNameLabel')}
+      </Text>
       <TextInput
-        style={styles.input}
+        style={{
+          borderWidth: theme.borderWidth.regular,
+          borderColor: theme.colors.ink,
+          borderRadius: theme.borderRadius.card,
+          paddingHorizontal: theme.spacing[4],
+          paddingVertical: theme.spacing[4],
+          fontSize: theme.textStyles.body.fontSize,
+          color: theme.colors.ink,
+          backgroundColor: theme.colors.surface,
+          fontWeight: '600',
+          ...theme.shadows.card,
+        }}
         value={name}
         onChangeText={setName}
         placeholder={t('onboarding.familyNamePlaceholder')}
+        placeholderTextColor={theme.colors.textSecondary}
         autoCapitalize="words"
         accessibilityLabel={t('onboarding.familyNameLabel')}
       />
 
-      <Text style={styles.label}>{t('onboarding.localeLabel')}</Text>
-      <View style={styles.localeRow} accessibilityRole="radiogroup">
+      <Text
+        style={{
+          fontSize: theme.textStyles.caption.fontSize,
+          fontWeight: '700',
+          color: theme.colors.textSecondary,
+          marginTop: theme.spacing[5],
+          marginBottom: theme.spacing[2],
+          textTransform: 'uppercase',
+          letterSpacing: 0.5,
+        }}
+      >
+        {t('onboarding.localeLabel')}
+      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: theme.spacing[2],
+        }}
+        accessibilityRole="radiogroup"
+      >
         {LOCALES.map((l) => (
           <TouchableOpacity
             key={l.value}
-            style={[styles.localeChip, locale === l.value && styles.localeChipActive]}
+            style={{
+              flex: 1,
+              paddingVertical: theme.spacing[3],
+              borderRadius: theme.borderRadius.sm,
+              borderWidth: theme.borderWidth.regular,
+              borderColor: locale === l.value ? theme.colors.ink : theme.colors.disabled,
+              backgroundColor: locale === l.value ? theme.tints.sun : theme.colors.surface,
+              alignItems: 'center',
+              ...(locale === l.value ? theme.shadows.chip : {}),
+            }}
             onPress={() => setLocale(l.value)}
             accessibilityRole="radio"
             accessibilityState={{ checked: locale === l.value }}
             accessibilityLabel={l.label}
           >
             <Text
-              style={[styles.localeText, locale === l.value && styles.localeTextActive]}
+              style={{
+                fontSize: theme.textStyles.caption.fontSize,
+                color: theme.colors.ink,
+                fontWeight: locale === l.value ? '700' : '500',
+              }}
             >
               {l.label}
             </Text>
@@ -74,93 +156,55 @@ export default function CreateFamilyScreen() {
       </View>
 
       <TouchableOpacity
-        style={[styles.button, (!name.trim() || createFamily.isPending) && styles.buttonDisabled]}
+        style={{
+          backgroundColor: !name.trim() || createFamily.isPending
+            ? theme.colors.disabled
+            : theme.colors.primary,
+          borderRadius: theme.borderRadius.button,
+          borderWidth: theme.borderWidth.thick,
+          borderColor: theme.colors.ink,
+          paddingVertical: theme.spacing[4],
+          alignItems: 'center',
+          marginTop: theme.spacing[6],
+          ...theme.shadows.button,
+        }}
         onPress={handleContinue}
         disabled={!name.trim() || createFamily.isPending}
         accessibilityRole="button"
         accessibilityLabel={t('onboarding.continue')}
       >
         {createFamily.isPending ? (
-          <ActivityIndicator color="#FFFFFF" />
+          <ActivityIndicator color={theme.colors.onFill} />
         ) : (
-          <Text style={styles.buttonText}>{t('onboarding.continue')}</Text>
+          <Text
+            style={{
+              fontSize: theme.textStyles.body.fontSize,
+              fontWeight: '900',
+              color: theme.colors.onFill,
+            }}
+          >
+            {t('onboarding.continue')} →
+          </Text>
         )}
       </TouchableOpacity>
+
+      {__DEV__ && (
+        <TouchableOpacity
+          style={{
+            marginTop: theme.spacing[6],
+            padding: theme.spacing[3],
+          }}
+          onPress={handleSignOut}
+        >
+          <Text style={{
+            fontSize: theme.textStyles.caption.fontSize,
+            color: theme.colors.error,
+            textAlign: 'center',
+          }}>
+            🚪 Выйти и войти заново
+          </Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: '#FFFEF0',
-    paddingHorizontal: 24,
-    paddingTop: 72,
-    paddingBottom: 48,
-    gap: 8,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6B7280',
-    marginTop: 16,
-    marginBottom: 4,
-  },
-  input: {
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: '#1F2937',
-    backgroundColor: '#FFFFFF',
-  },
-  localeRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 4,
-  },
-  localeChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB',
-    backgroundColor: '#FFFFFF',
-  },
-  localeChipActive: {
-    borderColor: '#4F46E5',
-    backgroundColor: '#EEF2FF',
-  },
-  localeText: {
-    fontSize: 14,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  localeTextActive: {
-    color: '#4F46E5',
-    fontWeight: '600',
-  },
-  button: {
-    backgroundColor: '#4F46E5',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 32,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-});

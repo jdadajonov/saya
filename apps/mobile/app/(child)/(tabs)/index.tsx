@@ -310,19 +310,14 @@ export default function ChildTodayScreen() {
   const sessions = (todaySessions.data ?? []).filter((s) => s.status !== 'cancelled');
   const moodMut = useRecordMood();
 
-  const handleGateSuccess = async () => {
+  const handleGateSuccess = () => {
     setGateVisible(false);
-    try {
-      // First navigate, then update state after a delay
-      router.replace('/(parent)/');
-      // Update mode after navigation has started
-      requestAnimationFrame(() => {
-        switchToParent();
-      });
-    } catch (e) {
-      console.error('Navigation error:', e);
+    setTimeout(() => {
       switchToParent();
-    }
+      setTimeout(() => {
+        router.replace('/(parent)' as never);
+      }, 100);
+    }, 400);
   };
 
   const handleMood = (sessionId: string, mood: MoodValue) => {
