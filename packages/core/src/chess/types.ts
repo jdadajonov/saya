@@ -27,24 +27,28 @@ export interface IdentifyPiecePayload {
   piece: ChessPiece;
   color: ChessColor;
   options: ChessPiece[];
+  [key: string]: unknown;
 }
 
 export interface MovementPayload {
   fen: string;
   pieceSquare: ChessSquare;
   validSquares: ChessSquare[];
+  [key: string]: unknown;
 }
 
 export interface CapturePayload {
   fen: string;
   attackerSquare: ChessSquare;
   targetSquares: ChessSquare[];
+  [key: string]: unknown;
 }
 
 export interface MateInOnePayload {
   fen: string;
   solution: string;
   hint?: string;
+  [key: string]: unknown;
 }
 
 export interface PuzzlePayload {
@@ -52,6 +56,7 @@ export interface PuzzlePayload {
   fen: string;
   moves: string[];
   rating: number;
+  [key: string]: unknown;
 }
 
 export type ChessExercisePayload =

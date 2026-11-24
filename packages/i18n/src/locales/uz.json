@@ -76,6 +76,29 @@
     "chessMove": "{{piece}} qayerga yurishi mumkin?",
     "chessMovement": "Figuralar harakati",
     "chessSelectSquares": "Barcha kataklarni tanlang",
+    "chess": {
+      "identifyPrompt": "Bu qaysi figura?",
+      "movementPrompt": "Figura yurishi mumkin bo'lgan barcha kataklarni bosing",
+      "capturePrompt": "Barcha figuralarni yeng! ({{count}} ta)",
+      "mateInOnePrompt": "Bir yurishda mot qo'ying!",
+      "puzzlePrompt": "Eng yaxshi yurishni toping!",
+      "checkAnswer": "Tekshirish",
+      "selectedCount": "Tanlangan: {{selected}} / {{total}}",
+      "capturedCount": "Yengilgan: {{captured}} / {{total}}",
+      "allCorrect": "Hammasi to'g'ri!",
+      "tryAgain": "{{missed}} ta katak o'tkazib yuborildi",
+      "allCaptured": "Hammasi yegildi!",
+      "checkmate": "Shox va mot!",
+      "puzzleSolved": "To'g'ri!",
+      "notQuite": "Uncha emas. Yana urining!",
+      "hints": {
+        "back_rank": "Oxirgi qatorga qarang",
+        "queen_mate": "Vazir mot qo'yishi mumkin",
+        "smothered": "Ot shohni bo'g'adi",
+        "ladder": "Ikki rux birga ishlaydi",
+        "diagonal_support": "Fil hujumni qo'llaydi"
+      }
+    },
     "chessPieces": {
       "king": "Shoh",
       "queen": "Vazir",

@@ -76,6 +76,29 @@
     "chessMove": "Where can the {{piece}} move?",
     "chessMovement": "Piece Movement",
     "chessSelectSquares": "Select all squares",
+    "chess": {
+      "identifyPrompt": "Which piece is this?",
+      "movementPrompt": "Tap all squares where the piece can move",
+      "capturePrompt": "Capture all pieces! ({{count}} total)",
+      "mateInOnePrompt": "Checkmate in one move!",
+      "puzzlePrompt": "Find the best move!",
+      "checkAnswer": "Check",
+      "selectedCount": "Selected: {{selected}} of {{total}}",
+      "capturedCount": "Captured: {{captured}} of {{total}}",
+      "allCorrect": "All correct!",
+      "tryAgain": "Missed {{missed}} squares",
+      "allCaptured": "All captured!",
+      "checkmate": "Checkmate!",
+      "puzzleSolved": "Correct!",
+      "notQuite": "Not quite. Try again!",
+      "hints": {
+        "back_rank": "Look at the back rank",
+        "queen_mate": "The queen can deliver mate",
+        "smothered": "The knight smothers the king",
+        "ladder": "Two rooks work together",
+        "diagonal_support": "The bishop supports the attack"
+      }
+    },
     "chessPieces": {
       "king": "King",
       "queen": "Queen",

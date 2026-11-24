@@ -81,6 +81,29 @@
     "chessFindCheckmate": "Найди мат!",
     "chessCheckmate": "Шах и мат!",
     "chessNotCheckmate": "Это не мат. Попробуй ещё!",
+    "chess": {
+      "identifyPrompt": "Какая это фигура?",
+      "movementPrompt": "Нажми на все клетки, куда может пойти фигура",
+      "capturePrompt": "Съешь все фигуры! ({{count}} шт.)",
+      "mateInOnePrompt": "Поставь мат в один ход!",
+      "puzzlePrompt": "Найди лучший ход!",
+      "checkAnswer": "Проверить",
+      "selectedCount": "Выбрано: {{selected}} из {{total}}",
+      "capturedCount": "Съедено: {{captured}} из {{total}}",
+      "allCorrect": "Всё верно!",
+      "tryAgain": "Пропущено {{missed}} клеток",
+      "allCaptured": "Все съедены!",
+      "checkmate": "Шах и мат!",
+      "puzzleSolved": "Правильно!",
+      "notQuite": "Не совсем. Попробуй ещё!",
+      "hints": {
+        "back_rank": "Посмотри на последнюю горизонталь",
+        "queen_mate": "Ферзь может поставить мат",
+        "smothered": "Конь душит короля",
+        "ladder": "Две ладьи работают вместе",
+        "diagonal_support": "Слон поддерживает атаку"
+      }
+    },
     "chessHint": {
       "back_rank": "Посмотри на последнюю горизонталь",
       "queen_mate": "Ферзь может поставить мат",
