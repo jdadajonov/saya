@@ -70,7 +70,7 @@
     "multiplication": "Таблица умножения",
     "multiplicationSub": "Выучи таблицу умножения",
     "english": "Английский",
-    "chess": "Шахматы",
+    "chessTitle": "Шахматы",
     "chessSub": "Научись играть в шахматы",
     "chessIdentify": "Какая это фигура?",
     "chessMove": "Куда может пойти {{piece}}?",
@@ -82,6 +82,7 @@
     "chessCheckmate": "Шах и мат!",
     "chessNotCheckmate": "Это не мат. Попробуй ещё!",
     "chess": {
+      "title": "Шахматы",
       "identify": "Узнай фигуры",
       "mateInOne": "Мат в 1 ход",
       "tactics": "Тактика",

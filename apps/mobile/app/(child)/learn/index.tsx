@@ -25,7 +25,7 @@ const SUBJECTS = [
     icon: '♟️',
     emoji: '♟️',
     tintKey: 'violet' as const,
-    titleKey: 'learning.chess',
+    titleKey: 'learning.chess.title',
     subKey: 'learning.chessSub',
   },
 ];

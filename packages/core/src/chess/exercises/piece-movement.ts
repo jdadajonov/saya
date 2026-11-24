@@ -25,9 +25,14 @@ export const pieceMovementPlugin: ExercisePlugin<MovementPayload> = {
     };
   },
 
-  generateVariants(_payload: MovementPayload, count: number): MovementPayload[] {
-    const pieces: ChessPiece[] = ['r', 'b', 'q', 'n', 'k'];
+  generateVariants(payload: MovementPayload, count: number): MovementPayload[] {
+    const defaultPieces: ChessPiece[] = ['r', 'b', 'q', 'n', 'k'];
     const variants: MovementPayload[] = [];
+
+    // If payload has a specific piece, use only that piece
+    const pieces = (payload as MovementPayload & { piece?: ChessPiece }).piece
+      ? [(payload as MovementPayload & { piece?: ChessPiece }).piece!]
+      : defaultPieces;
 
     for (let i = 0; i < count; i++) {
       const piece = pieces[i % pieces.length]!;

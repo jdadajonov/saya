@@ -6,12 +6,104 @@ import {
   calculateMissionXp,
   registerMultiplicationPlugin,
   registerEnglishPlugins,
+  registerChessPlugins,
+  identifyPiecePlugin,
+  pieceMovementPlugin,
+  captureExercisePlugin,
+  mateInOnePlugin,
+  puzzlePlugin,
 } from '@saya/core';
 import type { MissionCard, CardState } from '@saya/core';
 import { useLearningStore } from '../stores/learning-store';
 
 registerMultiplicationPlugin();
 registerEnglishPlugins();
+registerChessPlugins();
+
+function generateChessCards(skillCode: string): MissionCard[] {
+  const cards: MissionCard[] = [];
+  const defaultState = { mastery: 0, stability: 1, dueAt: new Date(0) };
+
+  if (skillCode === 'chess.identify') {
+    // Generate 10 identify piece exercises
+    const seedPayload = { piece: 'k' as const, color: 'w' as const, options: ['k', 'q', 'r', 'b'] as const };
+    const payloads = identifyPiecePlugin.generateVariants(seedPayload, 10);
+    for (const payload of payloads) {
+      cards.push({
+        skillCode,
+        exerciseTypeId: 'chess.identify',
+        difficulty: 1,
+        payload,
+        state: defaultState,
+      });
+    }
+  } else if (['chess.rook', 'chess.bishop', 'chess.queen', 'chess.knight', 'chess.pawn', 'chess.king'].includes(skillCode)) {
+    // Map skill to piece
+    const pieceMap: Record<string, 'r' | 'b' | 'q' | 'n' | 'p' | 'k'> = {
+      'chess.rook': 'r',
+      'chess.bishop': 'b',
+      'chess.queen': 'q',
+      'chess.knight': 'n',
+      'chess.pawn': 'p',
+      'chess.king': 'k',
+    };
+    const piece = pieceMap[skillCode]!;
+
+    // Generate movement exercises for specific piece
+    const seedPayload = {
+      fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+      pieceSquare: 'e4' as const,
+      piece,
+      validSquares: [] as string[],
+    };
+    const payloads = pieceMovementPlugin.generateVariants(seedPayload, 8);
+    for (const payload of payloads) {
+      cards.push({
+        skillCode,
+        exerciseTypeId: 'chess.movement',
+        difficulty: 1,
+        payload,
+        state: defaultState,
+      });
+    }
+  } else if (skillCode === 'chess.mate1') {
+    // Generate mate in one exercises
+    const seedPayload = {
+      fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+      solution: 'e1e8',
+    };
+    const payloads = mateInOnePlugin.generateVariants(seedPayload, 6);
+    for (const payload of payloads) {
+      cards.push({
+        skillCode,
+        exerciseTypeId: 'chess.mate1',
+        difficulty: 2,
+        payload,
+        state: defaultState,
+      });
+    }
+  } else if (skillCode === 'chess.tactics') {
+    // Generate puzzle exercises
+    const seedPayload = {
+      fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+      moves: ['e2e4'],
+      themes: ['fork'],
+      rating: 1000,
+    };
+    const payloads = puzzlePlugin.generateVariants(seedPayload, 6);
+    for (const payload of payloads) {
+      cards.push({
+        skillCode,
+        exerciseTypeId: 'chess.puzzle',
+        difficulty: 2,
+        payload,
+        state: defaultState,
+      });
+    }
+  }
+
+  return cards;
+}
 
 type GameMode = 'basic' | 'timed' | 'cumulative';
 
@@ -101,17 +193,25 @@ export function useMissionQuery(subjectCode: string, mode: GameMode = 'basic', n
       console.log('useMissionQuery: filtered exercises', filteredExercises.length);
 
       // Build cards
-      const allCards: MissionCard[] = filteredExercises.map((ex) => ({
-        skillCode: ex.skills.code,
-        exerciseTypeId: ex.type,
-        difficulty: ex.difficulty,
-        payload: ex.payload,
-        state: stateMap.get(ex.skill_id) ?? {
-          mastery: 0,
-          stability: 1,
-          dueAt: new Date(0),
-        },
-      }));
+      let allCards: MissionCard[] = [];
+
+      // Handle chess skills specially - generate exercises client-side
+      if (subjectCode.startsWith('chess.')) {
+        const chessCards = generateChessCards(subjectCode);
+        allCards = chessCards;
+      } else {
+        allCards = filteredExercises.map((ex) => ({
+          skillCode: ex.skills.code,
+          exerciseTypeId: ex.type,
+          difficulty: ex.difficulty,
+          payload: ex.payload,
+          state: stateMap.get(ex.skill_id) ?? {
+            mastery: 0,
+            stability: 1,
+            dueAt: new Date(0),
+          },
+        }));
+      }
 
       // For testing: skip progression filter, use all cards
       const cards = allCards.sort(() => Math.random() - 0.5);

@@ -428,7 +428,7 @@ export default function MissionMapScreen() {
   const isEnglish = subject?.startsWith('en.');
   const isChess = subject === 'chess';
   const headerTitle = isChess
-    ? t('learning.chess')
+    ? t('learning.chess.title')
     : isEnglish
     ? t('learning.english')
     : t('learning.multiplication');
