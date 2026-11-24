@@ -2,12 +2,12 @@ import { Text, View, StyleSheet } from 'react-native';
 import type { ChessPiece as ChessPieceType, ChessColor } from '@saya/core';
 
 const PIECE_SYMBOLS: Record<ChessPieceType, { w: string; b: string }> = {
-  k: { w: '♚', b: '♚' },
-  q: { w: '♛', b: '♛' },
-  r: { w: '♜', b: '♜' },
-  b: { w: '♝', b: '♝' },
-  n: { w: '♞', b: '♞' },
-  p: { w: '♟', b: '♟' },
+  k: { w: '♔', b: '♚' },
+  q: { w: '♕', b: '♛' },
+  r: { w: '♖', b: '♜' },
+  b: { w: '♗', b: '♝' },
+  n: { w: '♘', b: '♞' },
+  p: { w: '♙', b: '♟' },
 };
 
 interface PieceProps {
