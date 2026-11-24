@@ -1,6 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../src/ui/theme-provider';
 import { useAuthStore } from '../../../src/features/family/stores/auth-store';
 import { useCreateActivity } from '../../../src/features/activities/hooks/use-activities';
 import { ActivityForm } from '../../../src/features/activities/components/activity-form';
@@ -9,6 +10,7 @@ import type { CreateActivityInput } from '../../../src/features/activities/hooks
 export default function CreateActivityScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const theme = useTheme();
   const { children } = useAuthStore();
   const createMut = useCreateActivity();
 
@@ -22,20 +24,42 @@ export default function CreateActivityScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      {/* Header */}
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: theme.spacing[5],
+        paddingTop: 60,
+        paddingBottom: theme.spacing[4],
+      }}>
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backBtn}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: theme.colors.surface,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...theme.shadows.chip,
+          }}
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}
         >
-          <Text style={styles.backText}>‹</Text>
+          <Text style={{ fontSize: 20, color: theme.colors.ink }}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title} accessibilityRole="header">
+        <Text style={{
+          fontSize: theme.textStyles.title.fontSize,
+          fontWeight: '900',
+          color: theme.colors.ink,
+        }} accessibilityRole="header">
           {t('activities.create')}
         </Text>
-        <View style={{ width: 36 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ActivityForm
@@ -46,19 +70,3 @@ export default function CreateActivityScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 60,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  backBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  backText: { fontSize: 28, color: '#4F46E5', fontWeight: '300' },
-  title: { flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '700', color: '#1F2937' },
-});

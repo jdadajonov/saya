@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../src/ui/theme-provider';
 import {
   useActivitiesQuery,
   useSessionsQuery,
@@ -26,12 +27,12 @@ export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const router = useRouter();
+  const theme = useTheme();
 
   const now = new Date();
   const twoWeeksOut = new Date(now.getTime() + 14 * 86_400_000);
 
-  // Get activity by id from query cache
-  const activitiesQuery = useActivitiesQuery(null); // just to find from cache
+  const activitiesQuery = useActivitiesQuery(null);
   const activity = activitiesQuery.data?.find((a) => a.id === id) as ActivityRow | undefined;
 
   const sessionsQuery = useSessionsQuery(activity?.child_id ?? null, now, twoWeeksOut);
@@ -55,85 +56,187 @@ export default function ActivityDetailScreen() {
     setMoodSession(null);
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'done': return theme.colors.success;
+      case 'missed': return theme.colors.error;
+      default: return theme.colors.textSecondary;
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      {/* Header */}
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: theme.spacing[5],
+        paddingTop: 60,
+        paddingBottom: theme.spacing[4],
+        gap: theme.spacing[3],
+      }}>
         <TouchableOpacity
           onPress={() => router.back()}
-          style={styles.backBtn}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: theme.colors.surface,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...theme.shadows.chip,
+          }}
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}
         >
-          <Text style={styles.backText}>‹</Text>
+          <Text style={{ fontSize: 20, color: theme.colors.ink }}>←</Text>
         </TouchableOpacity>
         {activity && (
-          <View style={[styles.colorDot, { backgroundColor: activity.color }]} />
+          <View style={{
+            width: 16,
+            height: 16,
+            borderRadius: 8,
+            backgroundColor: activity.color,
+            borderWidth: theme.borderWidth.thin,
+            borderColor: theme.colors.ink,
+          }} />
         )}
-        <Text style={styles.title} accessibilityRole="header" numberOfLines={1}>
+        <Text style={{
+          flex: 1,
+          fontSize: theme.textStyles.title.fontSize,
+          fontWeight: '900',
+          color: theme.colors.ink,
+        }} accessibilityRole="header" numberOfLines={1}>
           {activity?.title ?? '…'}
         </Text>
-        <View style={{ width: 36 }} />
       </View>
 
       {sessionsQuery.isLoading ? (
-        <View style={styles.center}><ActivityIndicator color="#4F46E5" /></View>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator color={theme.colors.primary} />
+        </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.list}>
+        <ScrollView contentContainerStyle={{ padding: theme.spacing[5] }}>
           {sessions.length === 0 && (
-            <Text style={styles.empty}>{t('activities.noUpcomingSessions')}</Text>
+            <View style={{ alignItems: 'center', marginTop: theme.spacing[8] }}>
+              <Text style={{ fontSize: 48, marginBottom: theme.spacing[3] }}>📅</Text>
+              <Text style={{
+                fontSize: theme.textStyles.body.fontSize,
+                color: theme.colors.textSecondary,
+              }}>
+                {t('activities.noUpcomingSessions')}
+              </Text>
+            </View>
           )}
+
           {sessions.map((s) => (
-            <View key={s.id} style={styles.card}>
-              <View style={styles.cardLeft}>
-                <Text style={styles.cardDate}>{formatDateTime(s.starts_at)}</Text>
-                <Text style={[styles.cardStatus, { color: s.status === 'done' ? '#10B981' : s.status === 'missed' ? '#EF4444' : '#6B7280' }]}>
-                  {t(`activities.status.${s.status}`)}
-                </Text>
-              </View>
-
-              <View style={styles.cardActions}>
-                {s.status === 'planned' && (
-                  <TouchableOpacity
-                    style={styles.actionBtn}
-                    onPress={() => setConfirmSheet(s)}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('activities.confirmDone')}
-                  >
-                    <Text style={styles.actionBtnText}>✓</Text>
-                  </TouchableOpacity>
-                )}
-
-                {s.status === 'done' && !s.mood && (
-                  <TouchableOpacity
-                    style={[styles.actionBtn, styles.actionBtnMood]}
-                    onPress={() => setMoodSession(s.id)}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('activities.moodPrompt')}
-                  >
-                    <Text style={styles.actionBtnText}>😊</Text>
-                  </TouchableOpacity>
-                )}
-
-                {s.mood && (
-                  <Text style={styles.moodEmoji}>
-                    {{ great: '😄', good: '🙂', ok: '😐', bad: '😕', awful: '😩' }[s.mood] ?? '😊'}
+            <View
+              key={s.id}
+              style={{
+                backgroundColor: theme.colors.surface,
+                borderRadius: theme.borderRadius.card,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: theme.colors.ink,
+                padding: theme.spacing[4],
+                marginBottom: theme.spacing[3],
+                ...theme.shadows.card,
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{
+                    fontSize: theme.textStyles.body.fontSize,
+                    fontWeight: '700',
+                    color: theme.colors.ink,
+                  }}>
+                    {formatDateTime(s.starts_at)}
                   </Text>
-                )}
+                  <Text style={{
+                    fontSize: theme.textStyles.caption.fontSize,
+                    fontWeight: '600',
+                    color: getStatusColor(s.status),
+                    marginTop: 2,
+                  }}>
+                    {t(`activities.status.${s.status}`)}
+                  </Text>
+                </View>
 
-                {s.status === 'planned' && (
-                  <TouchableOpacity
-                    style={[styles.actionBtn, styles.actionBtnCancel]}
-                    onPress={() => cancelMut.mutate(s.id)}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('activities.cancelSession')}
-                  >
-                    <Text style={[styles.actionBtnText, { color: '#EF4444' }]}>✕</Text>
-                  </TouchableOpacity>
-                )}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[2] }}>
+                  {s.status === 'planned' && (
+                    <TouchableOpacity
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 20,
+                        backgroundColor: theme.tints.teal,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.ink,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => setConfirmSheet(s)}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('activities.confirmDone')}
+                    >
+                      <Text style={{ fontSize: 18, fontWeight: '700', color: theme.colors.ink }}>✓</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {s.status === 'done' && !s.mood && (
+                    <TouchableOpacity
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 20,
+                        backgroundColor: theme.tints.violet,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.ink,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => setMoodSession(s.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('activities.moodPrompt')}
+                    >
+                      <Text style={{ fontSize: 20 }}>😊</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {s.mood && (
+                    <Text style={{ fontSize: 28 }}>
+                      {{ great: '😄', good: '🙂', ok: '😐', bad: '😕', awful: '😩' }[s.mood] ?? '😊'}
+                    </Text>
+                  )}
+
+                  {s.status === 'planned' && (
+                    <TouchableOpacity
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 18,
+                        backgroundColor: theme.tints.coral,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => cancelMut.mutate(s.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('activities.cancelSession')}
+                    >
+                      <Text style={{ fontSize: 14, fontWeight: '700', color: theme.colors.ink }}>✕</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
 
               {moodSession === s.id && (
-                <View style={styles.moodPickerWrapper}>
+                <View style={{
+                  paddingTop: theme.spacing[3],
+                  marginTop: theme.spacing[3],
+                  borderTopWidth: theme.borderWidth.thin,
+                  borderTopColor: theme.colors.disabled,
+                }}>
                   <MoodPicker
                     value={s.mood as MoodValue | null}
                     onSelect={(mood) => handleMood(s.id, mood)}
@@ -153,52 +256,3 @@ export default function ActivityDetailScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9FAFB' },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 60,
-    paddingBottom: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-    gap: 8,
-  },
-  backBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  backText: { fontSize: 28, color: '#4F46E5', fontWeight: '300' },
-  colorDot: { width: 12, height: 12, borderRadius: 6 },
-  title: { flex: 1, fontSize: 18, fontWeight: '700', color: '#1F2937' },
-  empty: { textAlign: 'center', color: '#9CA3AF', fontSize: 15, marginTop: 40 },
-  list: { padding: 16, gap: 10 },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 14,
-    gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-  },
-  cardLeft: { flex: 1, gap: 2 },
-  cardDate: { fontSize: 15, fontWeight: '600', color: '#1F2937' },
-  cardStatus: { fontSize: 13, fontWeight: '500' },
-  cardActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
-  actionBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#D1FAE5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionBtnMood: { backgroundColor: '#EEF2FF' },
-  actionBtnCancel: { backgroundColor: '#FEE2E2' },
-  actionBtnText: { fontSize: 16, fontWeight: '700', color: '#10B981' },
-  moodEmoji: { fontSize: 24 },
-  moodPickerWrapper: { paddingTop: 8, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
-});

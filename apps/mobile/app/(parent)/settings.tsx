@@ -3,18 +3,20 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   Alert,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../src/ui/theme-provider';
 import { useAuthStore } from '../../src/features/family/stores/auth-store';
 import { useDeleteFamily } from '../../src/features/family/hooks/use-family';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const theme = useTheme();
   const signOut = useAuthStore((s) => s.signOut);
   const deleteFamily = useDeleteFamily();
   const [deleting, setDeleting] = useState(false);
@@ -47,87 +49,107 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      {/* Header */}
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: theme.spacing[5],
+        paddingTop: 60,
+        paddingBottom: theme.spacing[4],
+      }}>
         <TouchableOpacity
           onPress={() => router.back()}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: theme.colors.surface,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...theme.shadows.chip,
+          }}
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}
         >
-          <Text style={styles.backText}>‹</Text>
+          <Text style={{ fontSize: 20, color: theme.colors.ink }}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title} accessibilityRole="header">
+        <Text style={{
+          fontSize: theme.textStyles.title.fontSize,
+          fontWeight: '900',
+          color: theme.colors.ink,
+        }} accessibilityRole="header">
           {t('parent.settings')}
         </Text>
-        <View style={{ width: 32 }} />
+        <View style={{ width: 44 }} />
       </View>
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={{ padding: theme.spacing[5] }}>
+        {/* Sign Out */}
         <TouchableOpacity
-          style={styles.row}
+          style={{
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            padding: theme.spacing[4],
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: theme.spacing[3],
+            ...theme.shadows.card,
+          }}
           onPress={handleSignOut}
           accessibilityRole="button"
           accessibilityLabel={t('auth.signOut')}
         >
-          <Text style={styles.rowText}>{t('auth.signOut')}</Text>
-          <Text style={styles.chevron}>›</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[3] }}>
+            <Text style={{ fontSize: 20 }}>🚪</Text>
+            <Text style={{
+              fontSize: theme.textStyles.body.fontSize,
+              fontWeight: '600',
+              color: theme.colors.ink,
+            }}>
+              {t('auth.signOut')}
+            </Text>
+          </View>
+          <Text style={{ fontSize: 18, color: theme.colors.textSecondary }}>›</Text>
         </TouchableOpacity>
 
-        <View style={styles.divider} />
-
+        {/* Delete Account */}
         <TouchableOpacity
-          style={styles.dangerRow}
+          style={{
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.error,
+            padding: theme.spacing[4],
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: theme.spacing[6],
+          }}
           onPress={handleDeleteAccount}
           disabled={deleting}
           accessibilityRole="button"
           accessibilityLabel={t('parent.deleteAccount')}
         >
           {deleting ? (
-            <ActivityIndicator color="#EF4444" />
+            <ActivityIndicator color={theme.colors.error} />
           ) : (
-            <Text style={styles.dangerText}>{t('parent.deleteAccount')}</Text>
+            <Text style={{
+              fontSize: theme.textStyles.body.fontSize,
+              fontWeight: '600',
+              color: theme.colors.error,
+            }}>
+              {t('parent.deleteAccount')}
+            </Text>
           )}
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9FAFB' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  backText: { fontSize: 28, color: '#4F46E5', fontWeight: '300' },
-  title: { fontSize: 18, fontWeight: '700', color: '#1F2937' },
-  content: {
-    marginTop: 24,
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 20,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 18,
-  },
-  rowText: { fontSize: 16, color: '#1F2937' },
-  chevron: { fontSize: 20, color: '#9CA3AF' },
-  divider: { height: 1, backgroundColor: '#E5E7EB', marginHorizontal: 20 },
-  dangerRow: {
-    paddingHorizontal: 20,
-    paddingVertical: 18,
-  },
-  dangerText: { fontSize: 16, color: '#EF4444', fontWeight: '500' },
-});
