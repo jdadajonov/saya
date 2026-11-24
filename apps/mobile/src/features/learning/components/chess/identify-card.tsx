@@ -22,12 +22,12 @@ interface IdentifyCardProps {
 }
 
 const PIECE_NAMES: Record<ChessPiece, string> = {
-  k: 'chessPieces.king',
-  q: 'chessPieces.queen',
-  r: 'chessPieces.rook',
-  b: 'chessPieces.bishop',
-  n: 'chessPieces.knight',
-  p: 'chessPieces.pawn',
+  k: 'learning.chessPieces.king',
+  q: 'learning.chessPieces.queen',
+  r: 'learning.chessPieces.rook',
+  b: 'learning.chessPieces.bishop',
+  n: 'learning.chessPieces.knight',
+  p: 'learning.chessPieces.pawn',
 };
 
 export function IdentifyCard({ payload, onAnswer, disabled }: IdentifyCardProps) {
