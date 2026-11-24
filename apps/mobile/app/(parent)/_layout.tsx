@@ -1,15 +1,16 @@
-import { Tabs } from 'expo-router';
-import { useTranslation } from 'react-i18next';
+import { Stack } from 'expo-router';
 
 export default function ParentLayout() {
-  const { t } = useTranslation();
-
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="index" options={{ title: t('parent.home') }} />
-      <Tabs.Screen name="children" options={{ title: t('parent.children') }} />
-      <Tabs.Screen name="schedule" options={{ title: t('parent.schedule') }} />
-      <Tabs.Screen name="rewards" options={{ title: t('parent.rewards') }} />
-    </Tabs>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="children" />
+      <Stack.Screen name="schedule" />
+      <Stack.Screen name="rewards" />
+      <Stack.Screen name="settings" />
+      <Stack.Screen name="activities" />
+      <Stack.Screen name="goals" />
+      <Stack.Screen name="summary" />
+    </Stack>
   );
 }

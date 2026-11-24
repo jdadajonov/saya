@@ -5,6 +5,11 @@ export interface RewardConfig {
     missionCompleted: number;
     sessionConfirmed: number;
     milestoneAchieved: number;
+    speedBonus: number;
+  };
+  combo: {
+    streak3Multiplier: number;
+    streak5Multiplier: number;
   };
   coins: {
     missionCompleted: number;
@@ -28,6 +33,11 @@ export const DEFAULT_REWARD_CONFIG: RewardConfig = {
     missionCompleted: 10,
     sessionConfirmed: 15,
     milestoneAchieved: 50,
+    speedBonus: 1,
+  },
+  combo: {
+    streak3Multiplier: 2,
+    streak5Multiplier: 3,
   },
   coins: {
     missionCompleted: 2,
@@ -44,12 +54,3 @@ export const DEFAULT_REWARD_CONFIG: RewardConfig = {
   },
 };
 
-export function xpForLevel(level: number, config: RewardConfig): number {
-  return Math.floor(config.xpLevels.base * Math.pow(level, config.xpLevels.exponent));
-}
-
-export function levelFromTotalXp(totalXp: number, config: RewardConfig): number {
-  let level = 1;
-  while (xpForLevel(level + 1, config) <= totalXp) level++;
-  return level;
-}

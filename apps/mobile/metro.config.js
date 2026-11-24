@@ -16,6 +16,12 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
+// Add CSS to source extensions for Expo 58 CSS modules support
+config.resolver.sourceExts = [...config.resolver.sourceExts, 'css'];
+
+// Disable CSS modules in development (workaround for @expo/log-box issue)
+config.resolver.assetExts = [...config.resolver.assetExts.filter(ext => ext !== 'css')];
+
 // Use turbo cache directory
 config.cacheStores = [
   new FileStore({ root: path.join(projectRoot, '.metro-cache') }),

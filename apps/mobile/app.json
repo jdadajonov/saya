@@ -9,11 +9,11 @@
       "ios"
     ],
     "icon": "./assets/images/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FFFEF0"
+      "backgroundColor": "#FFE66D"
     },
     "ios": {
       "supportsTablet": false,
@@ -33,15 +33,15 @@
         "expo-notifications",
         {
           "icon": "./assets/images/notification-icon.png",
-          "color": "#4F46E5"
+          "color": "#4ECDC4"
         }
       ],
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FFFEF0",
+          "backgroundColor": "#FFE66D",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200
+          "imageWidth": 220
         }
       ],
       "expo-font",

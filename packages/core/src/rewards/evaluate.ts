@@ -1,18 +1,6 @@
-import type { DomainEvent } from '../events/types.js';
-import { DEFAULT_REWARD_CONFIG, type RewardConfig } from '../config/rewards.js';
-
-export type Currency = 'xp' | 'coins';
-
-export interface LedgerEntry {
-  currency: Currency;
-  amount: number;
-  reason: string;
-  sourceEventId: string;
-}
-
-export interface LedgerHistory {
-  coinsTodayFromStudy: number;
-}
+import type { DomainEvent } from '../events/types';
+import { DEFAULT_REWARD_CONFIG, type RewardConfig } from '../config/rewards';
+import type { Currency, LedgerEntry, LedgerHistory } from './types';
 
 export function evaluate(
   event: DomainEvent,

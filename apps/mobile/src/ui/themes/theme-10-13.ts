@@ -1,45 +1,52 @@
-import { neutral, semantic } from '../tokens/colors';
+import { ink, palette, semantic, tints } from '../tokens/colors';
 import { spacing } from '../tokens/spacing';
-import { fontSizes } from '../tokens/typography';
-import type { Theme } from './theme-7-9';
+import { fontFamilies } from '../tokens/typography';
+import { solidShadow, type Theme } from './types';
 
+/** Children 10–13: the same cartoon language, toned down — thinner outlines, lower shadows, denser text. */
 export const theme1013: Theme = {
+  name: '10-13',
   colors: {
-    primary: '#4F46E5',
-    primaryDark: '#3730A3',
-    secondary: '#7C3AED',
-    accent: '#06B6D4',
-    background: '#F8FAFC',
-    surface: '#FFFFFF',
-    textPrimary: neutral[900],
-    textSecondary: neutral[600],
-    border: neutral[200],
-    ...semantic,
+    primary: palette.coral,
+    primaryDark: palette.coralDark,
+    secondary: palette.teal,
+    accent: palette.sun,
+    background: palette.cream,
+    surface: palette.white,
+    textPrimary: ink,
+    textSecondary: palette.inkSoft,
+    border: ink,
+    ink,
+    onFill: ink,
+    disabled: palette.disabled,
+    night: palette.night,
+    nightSoft: palette.nightSoft,
+    xp: palette.orange,
+    coins: palette.gold,
+    success: palette.mint,
+    error: semantic.error,
+    warning: palette.orange,
+    info: palette.sky,
+    masteryBadge: palette.violet,
   },
-  spacing: {
-    ...spacing,
-    touchTarget: 44,
+  tints,
+  spacing: { ...spacing, touchTarget: 44 },
+  typography: { baseSize: 16, headingSize: 26, captionSize: 13 },
+  textStyles: {
+    display: { fontSize: 32, lineHeight: 36, family: 'black' },
+    title: { fontSize: 26, lineHeight: 30, family: 'black' },
+    heading: { fontSize: 18, lineHeight: 24, family: 'black' },
+    body: { fontSize: 16, lineHeight: 22, family: 'regular' },
+    caption: { fontSize: 13, lineHeight: 18, family: 'heavy' },
   },
-  typography: {
-    baseSize: fontSizes.md,
-    headingSize: fontSizes.xl,
-    captionSize: fontSizes.xs,
-  },
-  borderRadius: {
-    sm: 6,
-    md: 12,
-    lg: 16,
-    button: 10,
-    card: 12,
-    full: 999,
-  },
+  fonts: fontFamilies,
+  borderWidth: { thin: 1.5, regular: 2, thick: 3 },
+  borderRadius: { sm: 10, md: 16, lg: 22, button: 16, card: 18, full: 999 },
   shadows: {
-    card: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.06,
-      shadowRadius: 8,
-      elevation: 2,
-    },
+    card: solidShadow(3, ink),
+    button: solidShadow(4, ink),
+    chip: solidShadow(2, ink),
+    pressed: solidShadow(1, ink),
   },
+  pressDepth: 3,
 };

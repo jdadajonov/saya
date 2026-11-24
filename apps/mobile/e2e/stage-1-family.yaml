@@ -1,0 +1,91 @@
+appId: com.saya.mobile
+name: Stage 1 — Family onboarding and child mode
+tags:
+  - stage-1
+---
+- launchApp:
+    clearState: true
+
+# ── Login ─────────────────────────────────────────────────────────────────────
+- assertVisible: "Saya"
+- tapOn:
+    text: "Войти по email"
+- inputText:
+    text: "test+e2e@saya.example.com"
+- tapOn:
+    text: "Войти по email"
+- assertVisible: "Проверьте email"
+
+# ── (OTP deep-link handled by test runner / ngrok redirect) ──────────────────
+# In CI the test runner intercepts the magic-link and re-launches with the URL.
+# openLink: ${MAGIC_LINK}
+
+# ── Onboarding: create family ─────────────────────────────────────────────────
+- assertVisible: "Создать семью"
+- tapOn:
+    id: "familyNameInput"
+- inputText:
+    text: "E2E Family"
+- tapOn:
+    text: "Продолжить"
+
+# ── Onboarding: add first child ───────────────────────────────────────────────
+- assertVisible: "Добавить ребёнка"
+- tapOn:
+    id: "childNameInput"
+- inputText:
+    text: "Алёша"
+- tapOn:
+    id: "birthYearInput"
+- inputText:
+    text: "2015"
+- tapOn:
+    text: "7–9 лет"
+- tapOn:
+    text: "Готово"
+
+# ── Parent home: children list ────────────────────────────────────────────────
+- assertVisible: "E2E Family"
+- assertVisible: "Алёша"
+
+# ── Add a second child ────────────────────────────────────────────────────────
+- tapOn:
+    text: "+ Добавить ребёнка"
+- assertVisible: "Добавить ребёнка"
+- tapOn:
+    id: "childNameInput"
+- inputText:
+    text: "Зара"
+- tapOn:
+    id: "birthYearInput"
+- inputText:
+    text: "2013"
+- tapOn:
+    text: "10–13 лет"
+- tapOn:
+    text: "Сохранить"
+- assertVisible: "Зара"
+
+# ── Parental gate: switch to child mode ───────────────────────────────────────
+- tapOn:
+    text: "Алёша"
+- assertVisible: "Проверка родителя"
+- tapOn:
+    id: "gateInput"
+- inputText:
+    text: "999"
+- tapOn:
+    text: "Подтвердить"
+# Incorrect — should show error and re-challenge
+- assertVisible: "Неверно. Попробуйте ещё раз."
+
+# ── Exit child mode via gate ──────────────────────────────────────────────────
+# (would need correct digits — skipping correct entry in script; tested in unit tests)
+
+# ── Settings: sign out ────────────────────────────────────────────────────────
+- tapOn:
+    text: "⚙"
+- assertVisible: "Настройки"
+- tapOn:
+    text: "Выйти"
+- assertVisible: "Saya"
