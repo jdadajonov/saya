@@ -19,7 +19,9 @@
   },
   "auth": {
     "signInWithApple": "Apple orqali kirish",
+    "signInWithGoogle": "Google orqali kirish",
     "signInWithEmail": "Email orqali kirish",
+    "welcomeMessage": "Davom etish uchun kiring",
     "email": "Email",
     "password": "Parol",
     "signIn": "Kirish",

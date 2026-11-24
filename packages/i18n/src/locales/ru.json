@@ -19,7 +19,9 @@
   },
   "auth": {
     "signInWithApple": "Войти через Apple",
+    "signInWithGoogle": "Войти через Google",
     "signInWithEmail": "Войти по email",
+    "welcomeMessage": "Войдите чтобы продолжить",
     "email": "Email",
     "password": "Пароль",
     "signIn": "Войти",

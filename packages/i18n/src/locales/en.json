@@ -19,7 +19,9 @@
   },
   "auth": {
     "signInWithApple": "Sign in with Apple",
+    "signInWithGoogle": "Sign in with Google",
     "signInWithEmail": "Sign in with Email",
+    "welcomeMessage": "Sign in to continue",
     "email": "Email",
     "password": "Password",
     "signIn": "Sign In",

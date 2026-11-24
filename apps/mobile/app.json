@@ -20,7 +20,14 @@
       "bundleIdentifier": "uz.saya.app",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Используется для голосовых ответов",
-        "NSSpeechRecognitionUsageDescription": "Используется для голосового ввода"
+        "NSSpeechRecognitionUsageDescription": "Используется для голосового ввода",
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.414719156571-eifebfi60g07dq2sv5ecmo8akcgoosq2"
+            ]
+          }
+        ]
       }
     },
     "experiments": {

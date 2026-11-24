@@ -2,18 +2,21 @@ import { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri } from 'expo-auth-session';
 import { supabase } from '../../src/platform/supabase';
 import { Logo } from '../../src/ui/brand';
 import { useTheme } from '../../src/ui/theme-provider';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const DEV_USER = {
   email: 'dev@saya.test',
@@ -23,10 +26,40 @@ const DEV_USER = {
 export default function LoginScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [devLoading, setDevLoading] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
+
+  const redirectUri = makeRedirectUri({
+    scheme: 'com.googleusercontent.apps.414719156571-eifebfi60g07dq2sv5ecmo8akcgoosq2',
+  });
+
+  const [, googleResponse, googlePromptAsync] = Google.useAuthRequest({
+    iosClientId: process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'],
+    webClientId: process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'],
+    redirectUri,
+  });
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      const result = await googlePromptAsync();
+
+      if (result.type === 'success') {
+        const { id_token } = result.params;
+
+        const { error } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: id_token,
+        });
+
+        if (error) throw error;
+      }
+    } catch (err: unknown) {
+      Alert.alert(t('common.error'), (err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAppleSignIn = async () => {
     try {
@@ -52,33 +85,14 @@ export default function LoginScreen() {
     }
   };
 
-  const handleEmailOtp = async () => {
-    if (!email.trim()) return;
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({
-        email: email.trim().toLowerCase(),
-        options: { shouldCreateUser: true },
-      });
-      if (error) throw error;
-      setOtpSent(true);
-    } catch (err: unknown) {
-      Alert.alert(t('common.error'), (err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDevLogin = async () => {
     try {
       setDevLoading(true);
-      // Try to sign in first
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: DEV_USER.email,
         password: DEV_USER.password,
       });
 
-      // If user doesn't exist, create and sign in
       if (signInError?.message?.includes('Invalid login credentials')) {
         const { error: signUpError } = await supabase.auth.signUp({
           email: DEV_USER.email,
@@ -87,7 +101,6 @@ export default function LoginScreen() {
         });
         if (signUpError) throw signUpError;
 
-        // Sign in after signup
         const { error: retryError } = await supabase.auth.signInWithPassword({
           email: DEV_USER.email,
           password: DEV_USER.password,
@@ -104,10 +117,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: theme.colors.background }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <View style={{
         flex: 1,
         alignItems: 'center',
@@ -119,119 +129,92 @@ export default function LoginScreen() {
           <Logo variant="vertical" size={140} />
         </View>
 
-        {!otpSent ? (
-          <>
-            <AppleAuthentication.AppleAuthenticationButton
-              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-              cornerRadius={theme.borderRadius.card}
-              style={{ width: '100%', height: 52 }}
-              onPress={handleAppleSignIn}
-            />
+        <Text style={{
+          fontSize: theme.textStyles.body.fontSize,
+          color: theme.colors.textSecondary,
+          textAlign: 'center',
+          marginBottom: theme.spacing[2],
+        }}>
+          {t('auth.welcomeMessage')}
+        </Text>
 
-            <Text style={{ fontSize: 16, color: theme.colors.textSecondary }}>—</Text>
-
-            <TextInput
-              style={{
-                width: '100%',
-                borderWidth: theme.borderWidth.regular,
-                borderColor: theme.colors.ink,
-                borderRadius: theme.borderRadius.card,
-                paddingHorizontal: theme.spacing[4],
-                paddingVertical: theme.spacing[4],
+        {/* Google Sign In */}
+        <TouchableOpacity
+          style={{
+            width: '100%',
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            paddingVertical: theme.spacing[4],
+            paddingHorizontal: theme.spacing[5],
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: theme.spacing[3],
+            ...theme.shadows.card,
+          }}
+          onPress={handleGoogleSignIn}
+          disabled={loading}
+          accessibilityRole="button"
+          accessibilityLabel={t('auth.signInWithGoogle')}
+        >
+          {loading ? (
+            <ActivityIndicator color={theme.colors.ink} />
+          ) : (
+            <>
+              <Text style={{ fontSize: 20 }}>🔵</Text>
+              <Text style={{
                 fontSize: theme.textStyles.body.fontSize,
+                fontWeight: '700',
                 color: theme.colors.ink,
-                backgroundColor: theme.colors.surface,
-                fontWeight: '600',
-              }}
-              value={email}
-              onChangeText={setEmail}
-              placeholder={t('auth.email')}
-              placeholderTextColor={theme.colors.textSecondary}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              accessibilityLabel={t('auth.email')}
-            />
+              }}>
+                {t('auth.signInWithGoogle')}
+              </Text>
+            </>
+          )}
+        </TouchableOpacity>
 
-            <TouchableOpacity
-              style={{
-                width: '100%',
-                backgroundColor: loading || !email.trim() ? theme.colors.disabled : theme.colors.primary,
-                borderRadius: theme.borderRadius.button,
-                borderWidth: theme.borderWidth.thick,
-                borderColor: theme.colors.ink,
-                paddingVertical: theme.spacing[4],
-                alignItems: 'center',
-                ...theme.shadows.button,
-              }}
-              onPress={handleEmailOtp}
-              disabled={loading || !email.trim()}
-              accessibilityRole="button"
-              accessibilityLabel={t('auth.signInWithEmail')}
-            >
-              {loading ? (
-                <ActivityIndicator color={theme.colors.onFill} />
-              ) : (
-                <Text style={{
-                  fontSize: theme.textStyles.body.fontSize,
-                  fontWeight: '900',
-                  color: theme.colors.onFill,
-                }}>
-                  {t('auth.signInWithEmail')}
-                </Text>
-              )}
-            </TouchableOpacity>
+        <Text style={{ fontSize: 14, color: theme.colors.textSecondary }}>или</Text>
 
-            {__DEV__ && (
-              <TouchableOpacity
-                style={{
-                  width: '100%',
-                  backgroundColor: theme.tints.teal,
-                  borderRadius: theme.borderRadius.button,
-                  borderWidth: theme.borderWidth.regular,
-                  borderColor: theme.colors.ink,
-                  paddingVertical: theme.spacing[3],
-                  alignItems: 'center',
-                  marginTop: theme.spacing[4],
-                }}
-                onPress={handleDevLogin}
-                disabled={devLoading}
-              >
-                {devLoading ? (
-                  <ActivityIndicator color={theme.colors.ink} />
-                ) : (
-                  <Text style={{
-                    fontSize: theme.textStyles.caption.fontSize,
-                    fontWeight: '700',
-                    color: theme.colors.ink,
-                  }}>
-                    🛠️ Dev Login (dev@saya.test)
-                  </Text>
-                )}
-              </TouchableOpacity>
+        {/* Apple Sign In */}
+        <AppleAuthentication.AppleAuthenticationButton
+          buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+          buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+          cornerRadius={theme.borderRadius.card}
+          style={{ width: '100%', height: 52 }}
+          onPress={handleAppleSignIn}
+        />
+
+        {__DEV__ && (
+          <TouchableOpacity
+            style={{
+              width: '100%',
+              backgroundColor: theme.tints.teal,
+              borderRadius: theme.borderRadius.button,
+              borderWidth: theme.borderWidth.regular,
+              borderColor: theme.colors.ink,
+              paddingVertical: theme.spacing[3],
+              alignItems: 'center',
+              marginTop: theme.spacing[4],
+            }}
+            onPress={handleDevLogin}
+            disabled={devLoading}
+          >
+            {devLoading ? (
+              <ActivityIndicator color={theme.colors.ink} />
+            ) : (
+              <Text style={{
+                fontSize: theme.textStyles.caption.fontSize,
+                fontWeight: '700',
+                color: theme.colors.ink,
+              }}>
+                🛠️ Dev Login (dev@saya.test)
+              </Text>
             )}
-          </>
-        ) : (
-          <View style={{ alignItems: 'center', gap: theme.spacing[2] }}>
-            <Text style={{ fontSize: 48 }}>📬</Text>
-            <Text style={{
-              fontSize: theme.textStyles.heading.fontSize,
-              fontWeight: '900',
-              color: theme.colors.ink,
-            }}>
-              {t('auth.otpSentTitle')}
-            </Text>
-            <Text style={{
-              fontSize: theme.textStyles.body.fontSize,
-              color: theme.colors.textSecondary,
-              textAlign: 'center',
-            }}>
-              {t('auth.otpSentSubtitle', { email })}
-            </Text>
-          </View>
+          </TouchableOpacity>
         )}
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
