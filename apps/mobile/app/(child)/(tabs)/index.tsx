@@ -406,6 +406,34 @@ export default function ChildTodayScreen() {
         <WeekStreak theme={theme} />
       </View>
 
+      {/* Study button */}
+      <View style={{ paddingHorizontal: theme.spacing[5], marginBottom: theme.spacing[4] }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: theme.colors.primary,
+            borderRadius: theme.borderRadius.button,
+            borderWidth: theme.borderWidth.thick,
+            borderColor: theme.colors.ink,
+            paddingVertical: theme.spacing[4],
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: theme.spacing[2],
+            ...theme.shadows.button,
+          }}
+          onPress={() => router.push('/(child)/learn')}
+        >
+          <Text style={{ fontSize: 24 }}>📖</Text>
+          <Text style={{
+            fontSize: theme.textStyles.heading.fontSize,
+            fontWeight: '900',
+            color: theme.colors.onFill,
+          }}>
+            {t('learning.study')}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Missions section */}
       <Text style={{
         fontSize: theme.textStyles.heading.fontSize,
