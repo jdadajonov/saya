@@ -8,15 +8,15 @@ export interface BotDifficulty {
 
 const DIFFICULTY_LEVELS: Record<number, BotDifficulty> = {
   1: { skillLevel: 0, depth: 1, moveTime: 100 },
-  2: { skillLevel: 1, depth: 2, moveTime: 200 },
-  3: { skillLevel: 3, depth: 3, moveTime: 300 },
-  4: { skillLevel: 5, depth: 4, moveTime: 500 },
-  5: { skillLevel: 7, depth: 5, moveTime: 700 },
-  6: { skillLevel: 9, depth: 6, moveTime: 1000 },
-  7: { skillLevel: 11, depth: 7, moveTime: 1200 },
-  8: { skillLevel: 13, depth: 8, moveTime: 1500 },
-  9: { skillLevel: 15, depth: 9, moveTime: 1800 },
-  10: { skillLevel: 17, depth: 10, moveTime: 2000 },
+  2: { skillLevel: 1, depth: 1, moveTime: 200 },
+  3: { skillLevel: 3, depth: 2, moveTime: 300 },
+  4: { skillLevel: 5, depth: 2, moveTime: 500 },
+  5: { skillLevel: 7, depth: 3, moveTime: 700 },
+  6: { skillLevel: 9, depth: 3, moveTime: 1000 },
+  7: { skillLevel: 11, depth: 3, moveTime: 1200 },
+  8: { skillLevel: 13, depth: 3, moveTime: 1500 },
+  9: { skillLevel: 15, depth: 3, moveTime: 1800 },
+  10: { skillLevel: 17, depth: 3, moveTime: 2000 },
 };
 
 export function getDifficultyForAge(ageBand: AgeBand, level: number): BotDifficulty {

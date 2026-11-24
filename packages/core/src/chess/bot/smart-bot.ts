@@ -189,12 +189,19 @@ export function getBestMove(fen: string, difficulty: BotDifficulty): BotMove | n
   if (moves.length === 0) return null;
 
   const isWhite = chess.turn() === 'w';
-  const depth = Math.min(difficulty.depth, 4);
+  const depth = Math.min(difficulty.depth, 3);
+
+  // Pre-score moves for ordering (improves alpha-beta pruning)
+  const prescoredMoves = moves.map((move) => ({
+    move,
+    prescore: evaluateMove(chess, move),
+  }));
+  prescoredMoves.sort((a, b) => b.prescore - a.prescore);
 
   const evaluatedMoves: Array<{ move: Move; score: number }> = [];
 
-  for (const move of moves) {
-    let score = evaluateMove(chess, move);
+  for (const { move, prescore } of prescoredMoves) {
+    let score = prescore;
 
     if (depth > 0) {
       chess.move(move);
