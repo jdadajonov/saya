@@ -97,6 +97,27 @@
         "smothered": "The knight smothers the king",
         "ladder": "Two rooks work together",
         "diagonal_support": "The bishop supports the attack"
+      },
+      "game": {
+        "level": "Level {{level}}",
+        "yourTurn": "Your turn",
+        "botTurn": "Bot's turn",
+        "botThinking": "Bot thinking...",
+        "noMoves": "Start playing",
+        "youWin": "You win!",
+        "youLose": "Bot wins",
+        "draw": "Draw",
+        "resign": "Resign",
+        "playAgain": "Play again",
+        "reason": {
+          "checkmate": "Checkmate",
+          "stalemate": "Stalemate",
+          "insufficient_material": "Insufficient material",
+          "threefold_repetition": "Threefold repetition",
+          "fifty_moves": "50-move rule",
+          "resignation": "Resignation",
+          "timeout": "Time out"
+        }
       }
     },
     "chessPieces": {

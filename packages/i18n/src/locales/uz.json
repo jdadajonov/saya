@@ -97,6 +97,27 @@
         "smothered": "Ot shohni bo'g'adi",
         "ladder": "Ikki rux birga ishlaydi",
         "diagonal_support": "Fil hujumni qo'llaydi"
+      },
+      "game": {
+        "level": "{{level}}-daraja",
+        "yourTurn": "Sizning navbatingiz",
+        "botTurn": "Bot navbati",
+        "botThinking": "Bot o'ylayapti...",
+        "noMoves": "O'yinni boshlang",
+        "youWin": "Siz yutdingiz!",
+        "youLose": "Bot yutdi",
+        "draw": "Durrang",
+        "resign": "Taslim bo'lish",
+        "playAgain": "Yana o'ynash",
+        "reason": {
+          "checkmate": "Mot",
+          "stalemate": "Pat",
+          "insufficient_material": "Figuralar yetarli emas",
+          "threefold_repetition": "Uch marta takrorlash",
+          "fifty_moves": "50 yurish qoidasi",
+          "resignation": "Taslim",
+          "timeout": "Vaqt tugadi"
+        }
       }
     },
     "chessPieces": {

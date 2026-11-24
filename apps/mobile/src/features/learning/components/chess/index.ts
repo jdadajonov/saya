@@ -4,3 +4,4 @@ export { IdentifyCard } from './identify-card';
 export { MovementCard } from './movement-card';
 export { PuzzleCard } from './puzzle-card';
 export { CaptureCard } from './capture-card';
+export { BotGame } from './bot-game';

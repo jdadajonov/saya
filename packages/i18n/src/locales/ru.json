@@ -102,6 +102,27 @@
         "smothered": "Конь душит короля",
         "ladder": "Две ладьи работают вместе",
         "diagonal_support": "Слон поддерживает атаку"
+      },
+      "game": {
+        "level": "Уровень {{level}}",
+        "yourTurn": "Твой ход",
+        "botTurn": "Ход бота",
+        "botThinking": "Бот думает...",
+        "noMoves": "Начните игру",
+        "youWin": "Ты победил!",
+        "youLose": "Бот победил",
+        "draw": "Ничья",
+        "resign": "Сдаться",
+        "playAgain": "Играть ещё",
+        "reason": {
+          "checkmate": "Мат",
+          "stalemate": "Пат",
+          "insufficient_material": "Недостаточно фигур",
+          "threefold_repetition": "Троекратное повторение",
+          "fifty_moves": "Правило 50 ходов",
+          "resignation": "Сдача",
+          "timeout": "Время вышло"
+        }
       }
     },
     "chessHint": {

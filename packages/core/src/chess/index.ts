@@ -7,6 +7,8 @@ export * from './board';
 // Bot
 export * from './bot/difficulty';
 export * from './bot/engine-wrapper';
+export * from './bot/smart-bot';
+export * from './bot/game-manager';
 
 // Exercise plugins
 export { identifyPiecePlugin } from './exercises/identify-piece';

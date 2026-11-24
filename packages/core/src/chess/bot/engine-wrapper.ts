@@ -1,21 +1,20 @@
 import type { BotDifficulty } from './difficulty';
+import { getBestMove, getRandomMove, type BotMove } from './smart-bot';
 
 export interface ChessEngine {
   init(): Promise<void>;
   setDifficulty(difficulty: BotDifficulty): void;
-  getBestMove(fen: string): Promise<string>;
+  getBestMove(fen: string): Promise<BotMove | null>;
   stop(): void;
   isReady(): boolean;
 }
 
-export class StockfishEngine implements ChessEngine {
-  private engine: unknown = null;
+export class SmartBotEngine implements ChessEngine {
   private ready = false;
   private difficulty: BotDifficulty = { skillLevel: 1, depth: 2, moveTime: 200 };
+  private calculating = false;
 
   async init(): Promise<void> {
-    // Native module initialization will be handled in mobile app
-    // This is a stub for the interface
     this.ready = true;
   }
 
@@ -23,36 +22,45 @@ export class StockfishEngine implements ChessEngine {
     this.difficulty = difficulty;
   }
 
-  async getBestMove(fen: string): Promise<string> {
+  async getBestMove(fen: string): Promise<BotMove | null> {
     if (!this.ready) {
       throw new Error('Engine not initialized');
     }
 
-    // This will be replaced with actual Stockfish call in native module
-    // For now, return a placeholder that the mobile app will override
-    return this.getRandomLegalMove(fen);
+    if (this.calculating) {
+      return null;
+    }
+
+    this.calculating = true;
+
+    try {
+      await this.simulateThinkingTime();
+      const move = getBestMove(fen, this.difficulty);
+      return move;
+    } finally {
+      this.calculating = false;
+    }
   }
 
   stop(): void {
-    // Stop any ongoing calculation
+    this.calculating = false;
   }
 
   isReady(): boolean {
-    return this.ready;
+    return this.ready && !this.calculating;
   }
 
-  private getRandomLegalMove(fen: string): string {
-    // Fallback: import chess.js and return a random legal move
-    // This is used when Stockfish is not available
-    const { Chess } = require('chess.js');
-    const chess = new Chess(fen);
-    const moves = chess.moves({ verbose: true });
-    if (moves.length === 0) return '';
-    const move = moves[Math.floor(Math.random() * moves.length)]!;
-    return `${move.from}${move.to}`;
+  private async simulateThinkingTime(): Promise<void> {
+    const thinkTime = Math.min(
+      this.difficulty.moveTime,
+      200 + Math.random() * this.difficulty.moveTime
+    );
+    await new Promise((resolve) => setTimeout(resolve, thinkTime));
   }
 }
 
 export function createEngine(): ChessEngine {
-  return new StockfishEngine();
+  return new SmartBotEngine();
 }
+
+export { getBestMove, getRandomMove, type BotMove };
