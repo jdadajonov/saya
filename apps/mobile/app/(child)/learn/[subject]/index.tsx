@@ -242,9 +242,11 @@ function ChessMapScreen({ subject, theme, router, starsQuery, t }: {
   const getStars = (code: string) => (starsQuery.data?.get(code) ?? 0) as 0 | 1 | 2 | 3;
 
   const isUnlocked = (index: number) => {
-    if (index === 0) return true;
-    const prevSkill = CHESS_SKILLS[index - 1]!;
-    return getStars(prevSkill.code) >= 1;
+    // TODO: Chess skills not in DB yet, unlock all for testing
+    return true;
+    // if (index === 0) return true;
+    // const prevSkill = CHESS_SKILLS[index - 1]!;
+    // return getStars(prevSkill.code) >= 1;
   };
 
   const handleSelectSkill = (skill: ChessSkill) => {
