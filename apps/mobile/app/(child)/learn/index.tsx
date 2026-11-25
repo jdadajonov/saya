@@ -41,21 +41,49 @@ export default function SubjectListScreen() {
     <View style={{
       flex: 1,
       backgroundColor: theme.colors.background,
-      paddingHorizontal: theme.spacing[6],
-      paddingTop: 60,
-      gap: theme.spacing[5],
     }}>
-      <Text
-        style={{
-          fontSize: theme.textStyles.title.fontSize,
-          fontWeight: '900',
-          color: theme.colors.ink,
-          marginBottom: theme.spacing[2],
-        }}
-        accessibilityRole="header"
-      >
-        {t('learning.study')} 📖
-      </Text>
+      {/* Header with back button */}
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: theme.spacing[5],
+        paddingTop: 60,
+        paddingBottom: theme.spacing[4],
+        gap: theme.spacing[3],
+      }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: theme.colors.surface,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...theme.shadows.chip,
+          }}
+        >
+          <Text style={{ fontSize: 24, color: theme.colors.ink, fontWeight: '600' }}>‹</Text>
+        </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: theme.textStyles.title.fontSize,
+            fontWeight: '900',
+            color: theme.colors.ink,
+            flex: 1,
+          }}
+          accessibilityRole="header"
+        >
+          {t('learning.study')} 📖
+        </Text>
+      </View>
+
+      <View style={{
+        paddingHorizontal: theme.spacing[6],
+        gap: theme.spacing[5],
+      }}>
 
       {SUBJECTS.map((subject) => (
         <TouchableOpacity
@@ -110,6 +138,7 @@ export default function SubjectListScreen() {
           }}>›</Text>
         </TouchableOpacity>
       ))}
+      </View>
     </View>
   );
 }
