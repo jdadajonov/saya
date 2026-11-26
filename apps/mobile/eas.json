@@ -19,6 +19,12 @@
     },
     "production": {
       "credentialsSource": "local",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://gudeauaziuxxohujggrb.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_TP3iZ_fUWqOgIgqcsDolhg_no4tgJRn",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "414719156571-eifebfi60g07dq2sv5ecmo8akcgoosq2.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "414719156571-maheh7k54uv7hke0gdfovqhpud1e0sp5.apps.googleusercontent.com"
+      },
       "ios": {
         "autoIncrement": true
       }
