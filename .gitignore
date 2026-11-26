@@ -12,7 +12,18 @@ coverage/
 .env
 .env.local
 .env.*.local
+.env.production
 !.env.example
+
+# Apple certificates and keys
+*.p12
+*.p8
+*.mobileprovision
+credentials.json
+
+# Temp scripts
+generate-apple-secret.js
+gen-secret.mjs
 
 # iOS build artifacts
 ios/

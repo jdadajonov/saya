@@ -26,8 +26,14 @@
             "CFBundleURLSchemes": [
               "com.googleusercontent.apps.414719156571-eifebfi60g07dq2sv5ecmo8akcgoosq2"
             ]
+          },
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.414719156571-eifebfi60g07dq2sv5ecmo8akcgoosq2"
+            ]
           }
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "experiments": {
@@ -56,8 +62,14 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "TODO_AFTER_EAS_INIT"
+        "projectId": "3f65c8ef-1a78-4187-b104-3077a47fa9e8"
+      },
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
       }
-    }
+    },
+    "owner": "jdadajonov"
   }
 }

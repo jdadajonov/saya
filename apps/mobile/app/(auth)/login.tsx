@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri } from 'expo-auth-session';
+import { makeRedirectUri, ResponseType } from 'expo-auth-session';
 import { supabase } from '../../src/platform/supabase';
 import { Logo } from '../../src/ui/brand';
 import { useTheme } from '../../src/ui/theme-provider';
@@ -37,6 +37,8 @@ export default function LoginScreen() {
     iosClientId: process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'],
     webClientId: process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'],
     redirectUri,
+    scopes: ['openid', 'profile', 'email'],
+    responseType: ResponseType.IdToken,
   });
 
   const handleGoogleSignIn = async () => {

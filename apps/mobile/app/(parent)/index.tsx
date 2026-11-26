@@ -14,6 +14,7 @@ import {
   useFamilyQuery,
   useChildrenQuery,
 } from '../../src/features/family/hooks/use-family';
+import { useChildrenStats } from '../../src/features/family/hooks/use-child-stats';
 import { useRedemptionsQuery } from '../../src/features/rewards/hooks/use-rewards';
 import { useConfirmSession } from '../../src/features/activities/hooks/use-activities';
 import { ParentTabBar } from '../../src/features/family/components/parent-tab-bar';
@@ -142,6 +143,10 @@ export default function ParentHomeScreen() {
 
   const displayFamily = family ?? familyQuery.data;
   const displayChildren = childrenQuery.data ?? children;
+
+  // Fetch real stats for all children
+  const childIds = displayChildren.map(c => c.id);
+  const childrenStatsQuery = useChildrenStats(childIds);
 
   // Get pending reward requests
   const pendingRewardsQuery = useRedemptionsQuery(null, 'pending');
@@ -365,17 +370,34 @@ export default function ParentHomeScreen() {
           </View>
         )}
 
-        {/* Weekly summary chart */}
+        {/* Weekly summary chart - aggregate all children */}
         <WeeklyChart
-          data={[
-            { day: 'Пн', minutes: 25, missions: 2 },
-            { day: 'Вт', minutes: 18, missions: 1 },
-            { day: 'Ср', minutes: 32, missions: 3 },
-            { day: 'Чт', minutes: 0, missions: 0 },
-            { day: 'Пт', minutes: 22, missions: 2 },
-            { day: 'Сб', minutes: 15, missions: 1 },
-            { day: 'Вс', minutes: 0, missions: 0 },
-          ]}
+          data={(() => {
+            const defaultWeek = [
+              { day: 'Пн', minutes: 0, missions: 0 },
+              { day: 'Вт', minutes: 0, missions: 0 },
+              { day: 'Ср', minutes: 0, missions: 0 },
+              { day: 'Чт', minutes: 0, missions: 0 },
+              { day: 'Пт', minutes: 0, missions: 0 },
+              { day: 'Сб', minutes: 0, missions: 0 },
+              { day: 'Вс', minutes: 0, missions: 0 },
+            ];
+            if (!childrenStatsQuery.data) return defaultWeek;
+
+            // Aggregate stats from all children
+            return defaultWeek.map((day, idx) => {
+              let totalMinutes = 0;
+              let totalMissions = 0;
+              for (const childId of childIds) {
+                const stats = childrenStatsQuery.data[childId];
+                if (stats?.weeklyData[idx]) {
+                  totalMinutes += stats.weeklyData[idx].minutes;
+                  totalMissions += stats.weeklyData[idx].missions;
+                }
+              }
+              return { ...day, minutes: totalMinutes, missions: totalMissions };
+            });
+          })()}
           theme={theme}
         />
 
@@ -395,9 +417,10 @@ export default function ParentHomeScreen() {
           const avatarColor = AVATAR_COLORS[idx % AVATAR_COLORS.length];
           const currentYear = new Date().getFullYear();
           const age = currentYear - (child.birthYear ?? currentYear - 10);
-          const level = 5 + idx * 2;
-          const coins = 24 + idx * 17;
-          const streakDays = 4 + idx;
+          const stats = childrenStatsQuery.data?.[child.id];
+          const level = stats?.level ?? 1;
+          const coins = stats?.coins ?? 0;
+          const streakDays = stats?.streakDays ?? 0;
 
           return (
             <TouchableOpacity
@@ -482,7 +505,7 @@ export default function ParentHomeScreen() {
                     fontWeight: '800',
                     color: theme.colors.ink,
                   }}>
-                    {18 - idx * 18} мин
+                    {stats?.todayMinutes ?? 0} мин
                   </Text>
                   <Text style={{
                     fontSize: theme.textStyles.caption.fontSize,
@@ -502,7 +525,7 @@ export default function ParentHomeScreen() {
                     fontWeight: '800',
                     color: theme.colors.ink,
                   }}>
-                    {2 - idx} / {2 - idx}
+                    {stats?.todayMissions ?? 0}
                   </Text>
                   <Text style={{
                     fontSize: theme.textStyles.caption.fontSize,
@@ -522,13 +545,13 @@ export default function ParentHomeScreen() {
                     fontWeight: '800',
                     color: theme.colors.ink,
                   }}>
-                    {2 + idx} цели
+                    {stats?.activeGoals ?? 0}
                   </Text>
                   <Text style={{
                     fontSize: theme.textStyles.caption.fontSize,
                     color: theme.colors.textSecondary,
                   }}>
-                    в работе
+                    цели
                   </Text>
                 </View>
               </View>
