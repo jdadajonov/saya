@@ -38,8 +38,27 @@ function pickDistractors(
   exclude: string,
   count: number,
   field: 'en' | 'ru' | 'uz',
+  preferSkillCode?: string,
 ): string[] {
   const pool = all.filter((w) => w[field] !== exclude);
+
+  // Prefer distractors from the same topic/skill first
+  if (preferSkillCode) {
+    const sameTopicPool = pool.filter((w) => w.skillCode === preferSkillCode);
+    const shuffledSameTopic = [...sameTopicPool].sort(() => Math.random() - 0.5);
+
+    if (shuffledSameTopic.length >= count) {
+      return shuffledSameTopic.slice(0, count).map((w) => w[field]);
+    }
+
+    // If not enough in same topic, fill with others
+    const otherPool = pool.filter((w) => w.skillCode !== preferSkillCode);
+    const shuffledOther = [...otherPool].sort(() => Math.random() - 0.5);
+    const fromSameTopic = shuffledSameTopic.map((w) => w[field]);
+    const fromOther = shuffledOther.slice(0, count - fromSameTopic.length).map((w) => w[field]);
+    return [...fromSameTopic, ...fromOther];
+  }
+
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count).map((w) => w[field]);
 }
@@ -62,8 +81,8 @@ export function buildEnglishExercises(
   for (const topic of topics) {
     for (const word of topic.words) {
       const translation = locale === 'uz' ? word.uz : word.ru;
-      const otherTranslations = pickDistractors(allWords, translation, 3, locale === 'uz' ? 'uz' : 'ru');
-      const otherWords = pickDistractors(allWords, word.en, 3, 'en');
+      const otherTranslations = pickDistractors(allWords, translation, 3, locale === 'uz' ? 'uz' : 'ru', topic.skillCode);
+      const otherWords = pickDistractors(allWords, word.en, 3, 'en', topic.skillCode);
 
       exercises.push({
         skillCode: topic.skillCode,
