@@ -72,16 +72,24 @@ export default function CreateRewardScreen() {
       return;
     }
 
+    if (!family?.id) {
+      Alert.alert(t('common.error'), 'Семья не найдена. Попробуйте перезайти в приложение.');
+      return;
+    }
+
     createMut.mutate(
       {
-        familyId: family?.id ?? '',
+        familyId: family.id,
         title: finalTitle,
         description: description.trim() || undefined,
         costCoins,
       },
       {
         onSuccess: () => router.back(),
-        onError: () => Alert.alert(t('common.error'), t('common.retry')),
+        onError: (error) => {
+          console.error('Create reward error:', error);
+          Alert.alert(t('common.error'), `Не удалось создать награду: ${error.message}`);
+        },
       },
     );
   };

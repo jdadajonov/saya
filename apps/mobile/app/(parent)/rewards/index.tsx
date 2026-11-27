@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../src/ui/theme-provider';
@@ -7,9 +8,11 @@ import {
   useRewardCatalogQuery,
   usePendingRedemptionsForFamily,
   useApproveRedemption,
+  useGrantSurprise,
 } from '../../../src/features/rewards/hooks/use-rewards';
 import { ParentTabBar } from '../../../src/features/family/components/parent-tab-bar';
 import { useChildrenStats } from '../../../src/features/family/hooks/use-child-stats';
+import type { CatalogReward } from '@saya/core';
 
 const AVATAR_COLORS = ['#5DD4C8', '#FFB6C1', '#B4A7FF', '#FFD93D'];
 
@@ -31,13 +34,18 @@ export default function ParentRewardsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const theme = useTheme();
-  const { family, user, children } = useAuthStore();
+  const { family, children } = useAuthStore();
+
+  const [surpriseModalVisible, setSurpriseModalVisible] = useState(false);
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
+  const [selectedReward, setSelectedReward] = useState<CatalogReward | null>(null);
 
   const familyId = family?.id ?? null;
   const childIds = children.map((c) => c.id);
   const catalogQuery = useRewardCatalogQuery(familyId);
   const pendingQuery = usePendingRedemptionsForFamily(familyId);
   const approveMut = useApproveRedemption();
+  const surpriseMut = useGrantSurprise();
   const childrenStatsQuery = useChildrenStats(childIds);
 
   const catalog = catalogQuery.data ?? [];
@@ -45,11 +53,7 @@ export default function ParentRewardsScreen() {
   const childrenStats = childrenStatsQuery.data ?? {};
 
   const handleApprove = (redemptionId: string, approve: boolean) => {
-    approveMut.mutate({
-      redemptionId,
-      approve,
-      resolvedBy: user?.id ?? '',
-    });
+    approveMut.mutate({ redemptionId, approve });
   };
 
   if (catalogQuery.isLoading) {
@@ -294,7 +298,11 @@ export default function ParentRewardsScreen() {
             gap: theme.spacing[2],
             ...theme.shadows.card,
           }}
-          onPress={() => Alert.alert('Сюрприз', 'Выберите ребёнка и награду для сюрприза!')}
+          onPress={() => {
+            setSelectedChildId(null);
+            setSelectedReward(null);
+            setSurpriseModalVisible(true);
+          }}
         >
           <Text style={{ fontSize: 20 }}>🎁</Text>
           <Text style={{
@@ -306,6 +314,225 @@ export default function ParentRewardsScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Surprise Modal */}
+      <Modal
+        visible={surpriseModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setSurpriseModalVisible(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: theme.spacing[5],
+            paddingTop: 60,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.colors.disabled,
+          }}>
+            <Text style={{
+              fontSize: theme.textStyles.title.fontSize,
+              fontWeight: '900',
+              color: theme.colors.ink,
+            }}>
+              Сюрприз
+            </Text>
+            <TouchableOpacity onPress={() => setSurpriseModalVisible(false)}>
+              <Text style={{ fontSize: 24, color: theme.colors.textSecondary }}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView contentContainerStyle={{ padding: theme.spacing[5], paddingBottom: 20 }}>
+            {/* Child selection */}
+            <Text style={{
+              fontSize: theme.textStyles.heading.fontSize,
+              fontWeight: '800',
+              color: theme.colors.ink,
+              marginBottom: theme.spacing[3],
+            }}>
+              Выберите ребёнка
+            </Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing[3], marginBottom: theme.spacing[5] }}>
+              {children.map((child, idx) => {
+                const isSelected = selectedChildId === child.id;
+                const avatarColor = AVATAR_COLORS[idx % AVATAR_COLORS.length];
+                return (
+                  <TouchableOpacity
+                    key={child.id}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: theme.spacing[2],
+                      backgroundColor: isSelected ? theme.tints.mint : theme.colors.surface,
+                      borderRadius: theme.borderRadius.button,
+                      borderWidth: isSelected ? 3 : theme.borderWidth.regular,
+                      borderColor: theme.colors.ink,
+                      paddingHorizontal: theme.spacing[3],
+                      paddingVertical: theme.spacing[2],
+                    }}
+                    onPress={() => setSelectedChildId(child.id)}
+                  >
+                    <View style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: avatarColor,
+                      borderWidth: 1,
+                      borderColor: theme.colors.ink,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <Text style={{ fontSize: 14, fontWeight: '800', color: theme.colors.ink }}>
+                        {child.displayName?.charAt(0).toUpperCase() ?? '?'}
+                      </Text>
+                    </View>
+                    <Text style={{
+                      fontSize: theme.textStyles.body.fontSize,
+                      fontWeight: '700',
+                      color: theme.colors.ink,
+                    }}>
+                      {child.displayName}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Reward selection */}
+            <Text style={{
+              fontSize: theme.textStyles.heading.fontSize,
+              fontWeight: '800',
+              color: theme.colors.ink,
+              marginBottom: theme.spacing[3],
+            }}>
+              Выберите награду
+            </Text>
+            {catalog.length === 0 ? (
+              <Text style={{ color: theme.colors.textSecondary, marginBottom: theme.spacing[4] }}>
+                Сначала добавьте награды в каталог
+              </Text>
+            ) : (
+              <View style={{ gap: theme.spacing[3] }}>
+                {catalog.map((reward) => {
+                  const isSelected = selectedReward?.id === reward.id;
+                  return (
+                    <TouchableOpacity
+                      key={reward.id}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        backgroundColor: isSelected ? theme.tints.mint : theme.colors.surface,
+                        borderRadius: theme.borderRadius.card,
+                        borderWidth: isSelected ? 3 : theme.borderWidth.regular,
+                        borderColor: theme.colors.ink,
+                        padding: theme.spacing[3],
+                      }}
+                      onPress={() => setSelectedReward(reward)}
+                    >
+                      <View style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: theme.borderRadius.md,
+                        backgroundColor: theme.tints.sun,
+                        borderWidth: 1,
+                        borderColor: theme.colors.ink,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: theme.spacing[3],
+                      }}>
+                        <Text style={{ fontSize: 24 }}>🎁</Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{
+                          fontSize: theme.textStyles.body.fontSize,
+                          fontWeight: '700',
+                          color: theme.colors.ink,
+                        }}>
+                          {reward.title}
+                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                          <Text style={{ fontSize: 14 }}>🪙</Text>
+                          <Text style={{ fontSize: theme.textStyles.caption.fontSize, color: theme.colors.textSecondary }}>
+                            {reward.costCoins}
+                          </Text>
+                        </View>
+                      </View>
+                      {isSelected && (
+                        <Text style={{ fontSize: 20, color: theme.colors.success }}>✓</Text>
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            )}
+
+          </ScrollView>
+
+          {/* Grant button - fixed at bottom */}
+          <View style={{
+            padding: theme.spacing[5],
+            paddingBottom: 40,
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.disabled,
+            backgroundColor: theme.colors.background,
+          }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: selectedChildId && selectedReward ? theme.colors.primary : theme.colors.disabled,
+                borderRadius: theme.borderRadius.button,
+                borderWidth: theme.borderWidth.thick,
+                borderColor: theme.colors.ink,
+                paddingVertical: theme.spacing[4],
+                alignItems: 'center',
+                opacity: selectedChildId && selectedReward ? 1 : 0.5,
+                ...theme.shadows.button,
+              }}
+              activeOpacity={0.7}
+              disabled={!selectedChildId || !selectedReward || surpriseMut.isPending}
+              onPress={() => {
+                if (!selectedChildId || !selectedReward) return;
+                const childName = children.find(c => c.id === selectedChildId)?.displayName ?? 'ребёнок';
+                Alert.alert(
+                  'Подарить награду?',
+                  `${childName} получит «${selectedReward.title}» как сюрприз!`,
+                  [
+                    { text: 'Отмена', style: 'cancel' },
+                    {
+                      text: 'Подарить',
+                      onPress: () => {
+                        surpriseMut.mutate(
+                          { childId: selectedChildId, rewardId: selectedReward.id },
+                          {
+                            onSuccess: () => {
+                              setSurpriseModalVisible(false);
+                              Alert.alert('Готово!', `Сюрприз для ${childName} оформлен!`);
+                            },
+                            onError: () => Alert.alert('Ошибка', 'Не удалось оформить сюрприз'),
+                          }
+                        );
+                      },
+                    },
+                  ]
+                );
+              }}
+            >
+              {surpriseMut.isPending ? (
+                <ActivityIndicator color={theme.colors.onFill} />
+              ) : (
+                <Text style={{
+                  fontSize: theme.textStyles.heading.fontSize,
+                  fontWeight: '800',
+                  color: theme.colors.onFill,
+                }}>
+                  Подарить сюрприз
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <ParentTabBar activeTab="rewards" />
     </View>

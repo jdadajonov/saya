@@ -45,29 +45,31 @@ async function fetchChildStats(childId: string): Promise<ChildStats> {
   const weekDates = getWeekDates();
   const weekStart = getStartOfDay(weekDates[0]!);
 
-  // Fetch ledger entries for coins and XP
-  const { data: ledgerData } = await supabase
-    .from('ledger_entries')
-    .select('currency, amount')
-    .eq('child_id', childId);
+  // Run all queries in parallel
+  const [ledgerResult, goalsResult, attemptsResult] = await Promise.all([
+    supabase
+      .from('ledger_entries')
+      .select('entry_type, amount')
+      .eq('child_id', childId),
+    supabase
+      .from('goals')
+      .select('*', { count: 'exact', head: true })
+      .eq('child_id', childId)
+      .eq('status', 'active'),
+    supabase
+      .from('attempts')
+      .select('created_at, response_ms, exercise_id')
+      .eq('child_id', childId)
+      .gte('created_at', weekStart.toISOString()),
+  ]);
 
-  const coins = ledgerData?.filter(e => e.currency === 'coins').reduce((sum, e) => sum + e.amount, 0) ?? 0;
-  const xp = ledgerData?.filter(e => e.currency === 'xp').reduce((sum, e) => sum + e.amount, 0) ?? 0;
+  const ledgerData = ledgerResult.data;
+  const activeGoals = goalsResult.count;
+  const attemptsData = attemptsResult.data;
+
+  const coins = ledgerData?.filter(e => e.entry_type === 'coins').reduce((sum, e) => sum + e.amount, 0) ?? 0;
+  const xp = ledgerData?.filter(e => e.entry_type === 'xp').reduce((sum, e) => sum + e.amount, 0) ?? 0;
   const level = calculateLevel(xp);
-
-  // Fetch active goals count
-  const { count: activeGoals } = await supabase
-    .from('goals')
-    .select('*', { count: 'exact', head: true })
-    .eq('child_id', childId)
-    .eq('status', 'active');
-
-  // Fetch attempts for this week
-  const { data: attemptsData } = await supabase
-    .from('attempts')
-    .select('created_at, response_ms, exercise_id')
-    .eq('child_id', childId)
-    .gte('created_at', weekStart.toISOString());
 
   // Calculate today's stats
   const todayAttempts = attemptsData?.filter(a => {
@@ -129,10 +131,11 @@ export function useChildrenStats(childIds: string[]) {
   return useQuery({
     queryKey: ['children-stats', childIds],
     queryFn: async () => {
+      const statsArray = await Promise.all(childIds.map(id => fetchChildStats(id)));
       const results: Record<string, ChildStats> = {};
-      for (const id of childIds) {
-        results[id] = await fetchChildStats(id);
-      }
+      childIds.forEach((id, idx) => {
+        results[id] = statsArray[idx]!;
+      });
       return results;
     },
     enabled: childIds.length > 0,

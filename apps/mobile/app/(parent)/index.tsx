@@ -15,7 +15,7 @@ import {
   useChildrenQuery,
 } from '../../src/features/family/hooks/use-family';
 import { useChildrenStats } from '../../src/features/family/hooks/use-child-stats';
-import { useRedemptionsQuery } from '../../src/features/rewards/hooks/use-rewards';
+import { usePendingRedemptionsForFamily } from '../../src/features/rewards/hooks/use-rewards';
 import { useConfirmSession } from '../../src/features/activities/hooks/use-activities';
 import { ParentTabBar } from '../../src/features/family/components/parent-tab-bar';
 
@@ -139,7 +139,7 @@ export default function ParentHomeScreen() {
   const familyId = family?.id ?? familyQuery.data?.id ?? null;
   const childrenQuery = useChildrenQuery(familyId);
 
-  const [showSessionConfirm, setShowSessionConfirm] = useState(true);
+  const [showSessionConfirm, setShowSessionConfirm] = useState(false);
 
   const displayFamily = family ?? familyQuery.data;
   const displayChildren = childrenQuery.data ?? children;
@@ -148,8 +148,8 @@ export default function ParentHomeScreen() {
   const childIds = displayChildren.map(c => c.id);
   const childrenStatsQuery = useChildrenStats(childIds);
 
-  // Get pending reward requests
-  const pendingRewardsQuery = useRedemptionsQuery(null, 'pending');
+  // Get pending reward requests for family
+  const pendingRewardsQuery = usePendingRedemptionsForFamily(familyId);
   const pendingCount = pendingRewardsQuery.data?.length ?? 0;
 
   // Session confirmation

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,8 @@ import { useChildStats } from '../../../src/features/family/hooks/use-child-stat
 import type { SessionRow, ActivityRow } from '../../../src/features/activities/hooks/use-activities';
 import { MoodPicker } from '../../../src/features/activities/components/mood-picker';
 import type { MoodValue } from '../../../src/features/activities/components/mood-picker';
+import { SurpriseModal } from '../../../src/features/rewards/components/surprise-modal';
+import { useUnseenSurprises, useMarkSurpriseSeen } from '../../../src/features/rewards/hooks/use-surprises';
 
 function formatTime(iso: string): string {
   const d = new Date(iso);
@@ -305,6 +307,7 @@ export default function ChildTodayScreen() {
   const { children, activeChildId, switchToParent } = useAuthStore();
   const [gateVisible, setGateVisible] = useState(false);
   const [moodSession, setMoodSession] = useState<string | null>(null);
+  const [showSurprise, setShowSurprise] = useState(false);
 
   const child = children.find((c) => c.id === activeChildId);
 
@@ -312,6 +315,24 @@ export default function ChildTodayScreen() {
   const sessions = (todaySessions.data ?? []).filter((s) => s.status !== 'cancelled');
   const moodMut = useRecordMood();
   const statsQuery = useChildStats(activeChildId ?? null);
+  const surprisesQuery = useUnseenSurprises(activeChildId ?? null);
+  const markSeen = useMarkSurpriseSeen();
+
+  const currentSurprise = surprisesQuery.data?.[0] ?? null;
+
+  useEffect(() => {
+    if (currentSurprise && !showSurprise) {
+      const timer = setTimeout(() => setShowSurprise(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentSurprise]);
+
+  const handleDismissSurprise = () => {
+    if (currentSurprise) {
+      markSeen(currentSurprise.id);
+    }
+    setShowSurprise(false);
+  };
 
   const handleGateSuccess = () => {
     setGateVisible(false);
@@ -510,6 +531,12 @@ export default function ChildTodayScreen() {
         visible={gateVisible}
         onSuccess={handleGateSuccess}
         onDismiss={() => setGateVisible(false)}
+      />
+
+      <SurpriseModal
+        visible={showSurprise}
+        reward={currentSurprise?.reward ?? null}
+        onDismiss={handleDismissSurprise}
       />
     </ScrollView>
   );

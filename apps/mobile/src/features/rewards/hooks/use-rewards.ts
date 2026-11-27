@@ -107,7 +107,7 @@ export function useRewardCatalogQuery(familyId: string | null) {
         .from('rewards')
         .select('*')
         .eq('family_id', familyId!)
-        .eq('is_active', true)
+        .eq('active', true)
         .order('cost_coins', { ascending: true });
 
       if (error) throw error;
@@ -116,10 +116,10 @@ export function useRewardCatalogQuery(familyId: string | null) {
         id: row.id,
         familyId: row.family_id,
         title: row.title,
-        description: row.description,
+        description: row.description ?? '',
         costCoins: row.cost_coins,
-        imageKey: row.image_key,
-        isActive: row.is_active,
+        imageKey: row.image_key ?? undefined,
+        isActive: row.active ?? row.is_active ?? true,
       }));
     },
   });
@@ -136,20 +136,15 @@ export function useCreateReward() {
       costCoins: number;
       imageKey?: string;
     }) => {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('rewards')
         .insert({
           family_id: input.familyId,
           title: input.title,
-          description: input.description,
           cost_coins: input.costCoins,
-          image_key: input.imageKey,
-        })
-        .select()
-        .single();
+        });
 
       if (error) throw error;
-      return data;
     },
     onSuccess: (_, variables) => {
       void qc.invalidateQueries({ queryKey: ['rewards', 'catalog', variables.familyId] });
@@ -164,15 +159,13 @@ export function useUpdateReward() {
     mutationFn: async (input: {
       rewardId: string;
       title?: string;
-      description?: string;
       costCoins?: number;
       isActive?: boolean;
     }) => {
       const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (input.title !== undefined) updates.title = input.title;
-      if (input.description !== undefined) updates.description = input.description;
       if (input.costCoins !== undefined) updates.cost_coins = input.costCoins;
-      if (input.isActive !== undefined) updates.is_active = input.isActive;
+      if (input.isActive !== undefined) updates.active = input.isActive;
 
       const { error } = await supabase
         .from('rewards')
@@ -210,7 +203,7 @@ export function useRedemptionsQuery(childId: string | null, status?: RedemptionS
         .from('redemptions')
         .select('*, rewards(*)')
         .eq('child_id', childId!)
-        .order('requested_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (status) {
         query = query.eq('status', status);
@@ -219,24 +212,27 @@ export function useRedemptionsQuery(childId: string | null, status?: RedemptionS
       const { data, error } = await query;
       if (error) throw error;
 
-      return (data ?? []).map((row): Redemption => ({
-        id: row.id,
-        childId: row.child_id,
-        rewardId: row.reward_id,
-        reward: row.rewards ? {
-          id: row.rewards.id,
-          familyId: row.rewards.family_id,
-          title: row.rewards.title,
-          description: row.rewards.description,
-          costCoins: row.rewards.cost_coins,
-          imageKey: row.rewards.image_key,
-          isActive: row.rewards.is_active,
-        } : undefined,
-        status: row.status,
-        requestedAt: new Date(row.requested_at),
-        resolvedAt: row.resolved_at ? new Date(row.resolved_at) : undefined,
-        resolvedBy: row.resolved_by,
-      }));
+      return (data ?? []).map((row): Redemption => {
+        const rewards = Array.isArray(row.rewards) ? row.rewards[0] : row.rewards;
+        return {
+          id: row.id,
+          childId: row.child_id,
+          rewardId: row.reward_id,
+          reward: rewards ? {
+            id: rewards.id,
+            familyId: rewards.family_id,
+            title: rewards.title,
+            description: rewards.description ?? '',
+            costCoins: rewards.cost_coins,
+            imageKey: rewards.image_key ?? undefined,
+            isActive: rewards.active ?? rewards.is_active ?? true,
+          } : undefined,
+          status: row.status,
+          requestedAt: new Date(row.created_at),
+          resolvedAt: row.updated_at ? new Date(row.updated_at) : undefined,
+          resolvedBy: undefined,
+        };
+      });
     },
   });
 }
@@ -260,29 +256,32 @@ export function usePendingRedemptionsForFamily(familyId: string | null) {
         .select('*, rewards(*)')
         .in('child_id', childIds)
         .eq('status', 'pending')
-        .order('requested_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
       const childMap = new Map(children.map((c: { id: string; display_name: string }) => [c.id, c.display_name]));
 
-      return (data ?? []).map((row) => ({
-        id: row.id,
-        childId: row.child_id,
-        childName: childMap.get(row.child_id) ?? '',
-        rewardId: row.reward_id,
-        reward: row.rewards ? {
-          id: row.rewards.id,
-          familyId: row.rewards.family_id,
-          title: row.rewards.title,
-          description: row.rewards.description,
-          costCoins: row.rewards.cost_coins,
-          imageKey: row.rewards.image_key,
-          isActive: row.rewards.is_active,
-        } : undefined,
-        status: row.status as RedemptionStatus,
-        requestedAt: new Date(row.requested_at),
-      }));
+      return (data ?? []).map((row) => {
+        const rewards = Array.isArray(row.rewards) ? row.rewards[0] : row.rewards;
+        return {
+          id: row.id,
+          childId: row.child_id,
+          childName: childMap.get(row.child_id) ?? '',
+          rewardId: row.reward_id,
+          reward: rewards ? {
+            id: rewards.id,
+            familyId: rewards.family_id,
+            title: rewards.title,
+            description: rewards.description ?? '',
+            costCoins: rewards.cost_coins,
+            imageKey: rewards.image_key ?? undefined,
+            isActive: rewards.active ?? rewards.is_active ?? true,
+          } : undefined,
+          status: row.status as RedemptionStatus,
+          requestedAt: new Date(row.created_at),
+        };
+      });
     },
   });
 }
@@ -314,21 +313,15 @@ export function useApproveRedemption() {
     mutationFn: async ({
       redemptionId,
       approve,
-      resolvedBy,
     }: {
       redemptionId: string;
       approve: boolean;
-      resolvedBy: string;
     }) => {
       const status = approve ? 'approved' : 'declined';
 
       const { error } = await supabase
         .from('redemptions')
-        .update({
-          status,
-          resolved_at: new Date().toISOString(),
-          resolved_by: resolvedBy,
-        })
+        .update({ status })
         .eq('id', redemptionId);
 
       if (error) throw error;
@@ -356,6 +349,53 @@ export function useApproveRedemption() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['redemptions'] });
       void qc.invalidateQueries({ queryKey: ['balance'] });
+    },
+  });
+}
+
+export function useGrantSurprise() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      childId,
+      rewardId,
+    }: {
+      childId: string;
+      rewardId: string;
+    }) => {
+      const { error } = await supabase
+        .from('redemptions')
+        .insert({
+          child_id: childId,
+          reward_id: rewardId,
+          status: 'approved',
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['redemptions'] });
+      void qc.invalidateQueries({ queryKey: ['surprises'] });
+    },
+  });
+}
+
+export function useMarkRedemptionUsed() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (redemptionId: string) => {
+      const { error } = await supabase
+        .from('redemptions')
+        .update({ status: 'used' })
+        .eq('id', redemptionId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['redemptions'] });
+      void qc.invalidateQueries({ queryKey: ['surprises'] });
     },
   });
 }

@@ -8,6 +8,7 @@ import {
   useRewardCatalogQuery,
   useRedemptionsQuery,
   useRequestRedemption,
+  useMarkRedemptionUsed,
 } from '../../../../src/features/rewards/hooks/use-rewards';
 
 const REWARD_ICONS = {
@@ -46,11 +47,14 @@ export default function ChildRewardsScreen() {
   const balanceQuery = useBalanceQuery(childId);
   const catalogQuery = useRewardCatalogQuery(familyId);
   const pendingQuery = useRedemptionsQuery(childId, 'pending');
+  const approvedQuery = useRedemptionsQuery(childId, 'approved');
   const requestMut = useRequestRedemption();
+  const useMut = useMarkRedemptionUsed();
 
   const balance = balanceQuery.data;
   const catalog = catalogQuery.data ?? [];
   const pendingRequests = pendingQuery.data ?? [];
+  const approvedRewards = approvedQuery.data ?? [];
   const pendingRewardIds = new Set(pendingRequests.map((r) => r.rewardId));
 
   const handleRequest = (rewardId: string, rewardTitle: string) => {
@@ -70,6 +74,24 @@ export default function ChildRewardsScreen() {
                 onError: () => Alert.alert(t('common.error'), t('common.retry')),
               },
             ),
+        },
+      ],
+    );
+  };
+
+  const handleUse = (redemptionId: string, rewardTitle: string) => {
+    Alert.alert(
+      'Использовать награду?',
+      `Ты уверен, что хочешь использовать «${rewardTitle}»?`,
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Использовать',
+          onPress: () =>
+            useMut.mutate(redemptionId, {
+              onSuccess: () => Alert.alert('Готово!', `«${rewardTitle}» использована! 🎉`),
+              onError: () => Alert.alert(t('common.error'), t('common.retry')),
+            }),
         },
       ],
     );
@@ -131,6 +153,90 @@ export default function ChildRewardsScreen() {
             </Text>
           </View>
         </View>
+
+        {/* My rewards (approved, ready to use) */}
+        {approvedRewards.length > 0 && (
+          <>
+            <Text style={{
+              fontSize: theme.textStyles.heading.fontSize,
+              fontWeight: '800',
+              color: theme.colors.ink,
+              marginBottom: theme.spacing[3],
+            }}>
+              Мои награды 🎁
+            </Text>
+            <View style={{ gap: theme.spacing[3], marginBottom: theme.spacing[4] }}>
+              {approvedRewards.map((redemption) => {
+                const icon = getRewardIcon(redemption.reward?.title ?? '');
+                return (
+                  <View
+                    key={redemption.id}
+                    style={{
+                      backgroundColor: theme.tints.mint,
+                      borderRadius: theme.borderRadius.card,
+                      borderWidth: theme.borderWidth.thick,
+                      borderColor: theme.colors.ink,
+                      padding: theme.spacing[4],
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: theme.spacing[3],
+                      ...theme.shadows.card,
+                    }}
+                  >
+                    <View style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: theme.borderRadius.md,
+                      backgroundColor: theme.colors.surface,
+                      borderWidth: theme.borderWidth.regular,
+                      borderColor: theme.colors.ink,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <Text style={{ fontSize: 28 }}>{icon.emoji}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{
+                        fontSize: theme.textStyles.body.fontSize,
+                        fontWeight: '800',
+                        color: theme.colors.ink,
+                      }}>
+                        {redemption.reward?.title ?? 'Награда'}
+                      </Text>
+                      <Text style={{
+                        fontSize: theme.textStyles.caption.fontSize,
+                        color: theme.colors.textSecondary,
+                      }}>
+                        Готова к использованию
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: theme.colors.primary,
+                        borderRadius: theme.borderRadius.button,
+                        borderWidth: theme.borderWidth.regular,
+                        borderColor: theme.colors.ink,
+                        paddingHorizontal: theme.spacing[4],
+                        paddingVertical: theme.spacing[3],
+                        ...theme.shadows.chip,
+                      }}
+                      onPress={() => handleUse(redemption.id, redemption.reward?.title ?? '')}
+                      disabled={useMut.isPending}
+                    >
+                      <Text style={{
+                        fontSize: theme.textStyles.body.fontSize,
+                        fontWeight: '700',
+                        color: theme.colors.onFill,
+                      }}>
+                        Забрать
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
+            </View>
+          </>
+        )}
 
         {/* Pending request card */}
         {pendingReward && (
