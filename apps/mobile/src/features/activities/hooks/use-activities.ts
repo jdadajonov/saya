@@ -172,12 +172,41 @@ export function useCancelSession() {
 
   return useMutation({
     mutationFn: async (sessionId: string) => {
+      // Actually delete the session from database
       const { error } = await supabase
         .from('activity_sessions')
-        .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+        .delete()
         .eq('id', sessionId);
       if (error) throw error;
     },
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['sessions'] }),
+  });
+}
+
+export function useDeleteActivity() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ activityId, childId }: { activityId: string; childId: string }) => {
+      // Delete all sessions first (cascade should handle this, but explicit is safer)
+      const { error: sessionsError } = await supabase
+        .from('activity_sessions')
+        .delete()
+        .eq('activity_id', activityId);
+      if (sessionsError) throw sessionsError;
+
+      // Delete the activity
+      const { error: activityError } = await supabase
+        .from('activities')
+        .delete()
+        .eq('id', activityId);
+      if (activityError) throw activityError;
+
+      return { activityId, childId };
+    },
+    onSuccess: (data) => {
+      void qc.invalidateQueries({ queryKey: ['activities', data.childId] });
+      void qc.invalidateQueries({ queryKey: ['sessions'] });
+    },
   });
 }

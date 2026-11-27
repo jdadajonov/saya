@@ -6,6 +6,8 @@ import * as Notifications from 'expo-notifications';
 import { useTheme } from '../../../src/ui/theme-provider';
 import { useAuthStore } from '../../../src/features/family/stores/auth-store';
 import { useGoalsQuery, usePendingProposalsQuery, useSkillMasteryMap, useApproveGoal, usePendingVerificationsForChild, useApproveEvidence } from '../../../src/features/goals/hooks/use-goals';
+import { useActivitiesQuery, useDeleteActivity, useCreateActivity } from '../../../src/features/activities/hooks/use-activities';
+import type { RecurrenceRule } from '@saya/core';
 import { ParentTabBar } from '../../../src/features/family/components/parent-tab-bar';
 
 Notifications.setNotificationHandler({
@@ -97,6 +99,7 @@ interface WeeklyActivity {
   dayOfWeek: number; // 0 = Sunday, 1 = Monday, etc.
   time: string;
   childId?: string;
+  activityId?: string;
 }
 
 const DAY_NAMES = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
@@ -623,12 +626,36 @@ export default function ParentGoalsScreen() {
 
   const [showAddActivity, setShowAddActivity] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [weeklyActivities, setWeeklyActivities] = useState<WeeklyActivity[]>([
-    // Mock data - would come from database in production
-    { id: '1', name: 'Скалолазание', icon: '🧗', dayOfWeek: 2, time: '17:00' },
-    { id: '2', name: 'Музыка', icon: '🎵', dayOfWeek: 4, time: '15:30' },
-    { id: '3', name: 'Плавание', icon: '🏊', dayOfWeek: 6, time: '10:00' },
-  ]);
+
+  // Fetch activities from database
+  const activitiesQuery = useActivitiesQuery(childId);
+  const deleteActivityMut = useDeleteActivity();
+  const createActivityMut = useCreateActivity();
+
+  // Transform ActivityRow[] to WeeklyActivity[]
+  const weeklyActivities: WeeklyActivity[] = (activitiesQuery.data ?? []).flatMap((activity) => {
+    try {
+      const rule: RecurrenceRule = JSON.parse(activity.rrule);
+      const days = rule.days ?? ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+      const dayMap: Record<string, number> = { SUN: 0, MON: 1, TUE: 2, WED: 3, THU: 4, FRI: 5, SAT: 6 };
+      const iconMap: Record<string, string> = {
+        'Музыка': '🎵', 'Конный спорт': '🐴', 'Рисование': '🎨', 'Настольный теннис': '🏓',
+        'Скалолазание': '🧗', 'Плавание': '🏊', 'Футбол': '⚽', 'Танцы': '💃',
+        'Шахматы': '♟️', 'Гимнастика': '🤸', 'Программирование': '💻',
+      };
+      return days.map((day) => ({
+        id: `${activity.id}-${day}`,
+        name: activity.title,
+        icon: iconMap[activity.kind] ?? '📅',
+        dayOfWeek: dayMap[day] ?? 1,
+        time: rule.time,
+        childId: activity.child_id,
+        activityId: activity.id,
+      }));
+    } catch {
+      return [];
+    }
+  });
 
   // Request notification permissions on mount
   useEffect(() => {
@@ -688,17 +715,36 @@ export default function ParentGoalsScreen() {
   };
 
   const handleAddActivity = (activity: Omit<WeeklyActivity, 'id'>) => {
-    setWeeklyActivities((prev) => [
-      ...prev,
-      { ...activity, id: Date.now().toString() },
-    ]);
+    if (!childId) return;
+    const dayMap: Record<number, string> = { 0: 'SUN', 1: 'MON', 2: 'TUE', 3: 'WED', 4: 'THU', 5: 'FRI', 6: 'SAT' };
+    const colorMap: Record<string, string> = {
+      'Музыка': '#9B59B6', 'Конный спорт': '#8B4513', 'Рисование': '#E74C3C', 'Настольный теннис': '#3498DB',
+      'Скалолазание': '#27AE60', 'Плавание': '#1ABC9C', 'Футбол': '#2ECC71', 'Танцы': '#E91E63',
+      'Шахматы': '#607D8B', 'Гимнастика': '#FF9800', 'Программирование': '#00BCD4',
+    };
+    createActivityMut.mutate({
+      childId,
+      kind: activity.name,
+      title: activity.name,
+      color: colorMap[activity.name] ?? '#4ECDC4',
+      rule: {
+        freq: 'weekly',
+        days: [dayMap[activity.dayOfWeek] as 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'],
+        time: activity.time,
+        durationMin: 60,
+      },
+    });
   };
 
   const handleRemoveActivity = (id: string) => {
-    setWeeklyActivities((prev) => prev.filter((a) => a.id !== id));
+    // id format is "activityId-DAY" where activityId is a UUID, extract activityId
+    const lastDash = id.lastIndexOf('-');
+    const activityId = lastDash > 0 ? id.substring(0, lastDash) : id;
+    if (!activityId || !childId) return;
+    deleteActivityMut.mutate({ activityId, childId });
   };
 
-  if (goalsQuery.isLoading || masteryQuery.isLoading) {
+  if (goalsQuery.isLoading || masteryQuery.isLoading || activitiesQuery.isLoading) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.colors.background }}>
         <ActivityIndicator color={theme.colors.primary} size="large" />
