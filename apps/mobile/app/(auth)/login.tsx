@@ -9,14 +9,16 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, ResponseType } from 'expo-auth-session';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { supabase } from '../../src/platform/supabase';
 import { Logo } from '../../src/ui/brand';
 import { useTheme } from '../../src/ui/theme-provider';
 
-WebBrowser.maybeCompleteAuthSession();
+GoogleSignin.configure({
+  iosClientId: process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'],
+  webClientId: process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'],
+  scopes: ['openid', 'profile', 'email'],
+});
 
 const DEV_USER = {
   email: 'dev@saya.test',
@@ -29,35 +31,26 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [devLoading, setDevLoading] = useState(false);
 
-  const redirectUri = makeRedirectUri({
-    scheme: 'com.googleusercontent.apps.414719156571-eifebfi60g07dq2sv5ecmo8akcgoosq2',
-  });
-
-  const [, googleResponse, googlePromptAsync] = Google.useAuthRequest({
-    iosClientId: process.env['EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'],
-    webClientId: process.env['EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID'],
-    redirectUri,
-    scopes: ['openid', 'profile', 'email'],
-    responseType: ResponseType.IdToken,
-  });
-
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      const result = await googlePromptAsync();
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
 
-      if (result.type === 'success') {
-        const { id_token } = result.params;
-
+      if (response.data?.idToken) {
         const { error } = await supabase.auth.signInWithIdToken({
           provider: 'google',
-          token: id_token,
+          token: response.data.idToken,
         });
-
         if (error) throw error;
+      } else {
+        throw new Error('No idToken received from Google');
       }
     } catch (err: unknown) {
-      Alert.alert(t('common.error'), (err as Error).message);
+      const error = err as { code?: string; message?: string };
+      if (error.code !== 'SIGN_IN_CANCELLED') {
+        Alert.alert(t('common.error'), error.message || 'Google Sign In failed');
+      }
     } finally {
       setLoading(false);
     }
