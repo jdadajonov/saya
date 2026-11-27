@@ -12,7 +12,10 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../src/ui/theme-provider';
 import { useCreateFamily } from '../../../src/features/family/hooks/use-family';
+import { useAcceptInvitation } from '../../../src/features/family/hooks/use-invitations';
 import { supabase } from '../../../src/platform/supabase';
+
+type Mode = 'choose' | 'create' | 'join';
 
 const LOCALES = [
   { value: 'ru', label: '🇷🇺 Русский' },
@@ -25,9 +28,12 @@ export default function CreateFamilyScreen() {
   const router = useRouter();
   const theme = useTheme();
   const createFamily = useCreateFamily();
+  const acceptInvitation = useAcceptInvitation();
 
+  const [mode, setMode] = useState<Mode>('choose');
   const [name, setName] = useState('');
   const [locale, setLocale] = useState('ru');
+  const [inviteCode, setInviteCode] = useState('');
 
   const handleContinue = async () => {
     if (!name.trim()) return;
@@ -39,10 +45,276 @@ export default function CreateFamilyScreen() {
     }
   };
 
+  const handleJoinFamily = () => {
+    if (inviteCode.length !== 6) {
+      Alert.alert('Ошибка', 'Введите 6-значный код приглашения');
+      return;
+    }
+
+    acceptInvitation.mutate(inviteCode.toUpperCase(), {
+      onSuccess: (data) => {
+        Alert.alert(
+          'Добро пожаловать!',
+          `Вы присоединились к семье «${data.family_name}»`,
+          [{ text: 'OK', onPress: () => router.replace('/(parent)') }]
+        );
+      },
+      onError: (error) => {
+        const message =
+          error.message === 'Invalid or expired invitation code'
+            ? 'Неверный или просроченный код'
+            : error.message === 'Already a member of this family'
+            ? 'Вы уже состоите в этой семье'
+            : 'Не удалось присоединиться';
+        Alert.alert('Ошибка', message);
+      },
+    });
+  };
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.replace('/(auth)/login');
   };
+
+  // Choose mode screen
+  if (mode === 'choose') {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors.background,
+          paddingHorizontal: theme.spacing[6],
+          paddingTop: 100,
+        }}
+      >
+        <Text style={{ fontSize: 48, textAlign: 'center', marginBottom: theme.spacing[2] }}>
+          👋
+        </Text>
+        <Text
+          style={{
+            fontSize: theme.textStyles.title.fontSize,
+            fontWeight: '900',
+            color: theme.colors.ink,
+            textAlign: 'center',
+            marginBottom: theme.spacing[2],
+          }}
+        >
+          Добро пожаловать!
+        </Text>
+        <Text
+          style={{
+            fontSize: theme.textStyles.body.fontSize,
+            color: theme.colors.textSecondary,
+            textAlign: 'center',
+            marginBottom: theme.spacing[8],
+          }}
+        >
+          Как вы хотите начать?
+        </Text>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: theme.colors.primary,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.thick,
+            borderColor: theme.colors.ink,
+            padding: theme.spacing[5],
+            marginBottom: theme.spacing[4],
+            ...theme.shadows.card,
+          }}
+          onPress={() => setMode('create')}
+        >
+          <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: theme.spacing[2] }}>
+            👨‍👩‍👧‍👦
+          </Text>
+          <Text
+            style={{
+              fontSize: theme.textStyles.heading.fontSize,
+              fontWeight: '800',
+              color: theme.colors.onFill,
+              textAlign: 'center',
+            }}
+          >
+            Создать семью
+          </Text>
+          <Text
+            style={{
+              fontSize: theme.textStyles.caption.fontSize,
+              color: theme.colors.onFill,
+              textAlign: 'center',
+              marginTop: theme.spacing[1],
+              opacity: 0.8,
+            }}
+          >
+            Я первый родитель в приложении
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.thick,
+            borderColor: theme.colors.ink,
+            padding: theme.spacing[5],
+            ...theme.shadows.card,
+          }}
+          onPress={() => setMode('join')}
+        >
+          <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: theme.spacing[2] }}>
+            🔗
+          </Text>
+          <Text
+            style={{
+              fontSize: theme.textStyles.heading.fontSize,
+              fontWeight: '800',
+              color: theme.colors.ink,
+              textAlign: 'center',
+            }}
+          >
+            Присоединиться
+          </Text>
+          <Text
+            style={{
+              fontSize: theme.textStyles.caption.fontSize,
+              color: theme.colors.textSecondary,
+              textAlign: 'center',
+              marginTop: theme.spacing[1],
+            }}
+          >
+            У меня есть код приглашения
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // Join family screen
+  if (mode === 'join') {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors.background,
+          paddingHorizontal: theme.spacing[6],
+          paddingTop: 80,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => setMode('choose')}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: theme.colors.surface,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...theme.shadows.chip,
+            marginBottom: theme.spacing[4],
+          }}
+        >
+          <Text style={{ fontSize: 20, color: theme.colors.ink }}>←</Text>
+        </TouchableOpacity>
+
+        <Text style={{ fontSize: 48, textAlign: 'center', marginBottom: theme.spacing[2] }}>
+          🔗
+        </Text>
+        <Text
+          style={{
+            fontSize: theme.textStyles.title.fontSize,
+            fontWeight: '900',
+            color: theme.colors.ink,
+            textAlign: 'center',
+            marginBottom: theme.spacing[2],
+          }}
+        >
+          Присоединиться к семье
+        </Text>
+        <Text
+          style={{
+            fontSize: theme.textStyles.body.fontSize,
+            color: theme.colors.textSecondary,
+            textAlign: 'center',
+            marginBottom: theme.spacing[6],
+          }}
+        >
+          Введите код, который вам отправил член семьи
+        </Text>
+
+        <View
+          style={{
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.thick,
+            borderColor: theme.colors.ink,
+            padding: theme.spacing[4],
+            marginBottom: theme.spacing[4],
+            ...theme.shadows.card,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: theme.textStyles.caption.fontSize,
+              fontWeight: '600',
+              color: theme.colors.textSecondary,
+              marginBottom: theme.spacing[2],
+              textAlign: 'center',
+            }}
+          >
+            Код приглашения
+          </Text>
+          <TextInput
+            style={{
+              fontSize: 32,
+              fontWeight: '900',
+              color: theme.colors.ink,
+              textAlign: 'center',
+              letterSpacing: 6,
+              paddingVertical: theme.spacing[3],
+            }}
+            placeholder="XXXXXX"
+            placeholderTextColor={theme.colors.disabled}
+            value={inviteCode}
+            onChangeText={(text) => setInviteCode(text.toUpperCase().slice(0, 6))}
+            autoCapitalize="characters"
+            autoCorrect={false}
+            maxLength={6}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor:
+              inviteCode.length === 6 ? theme.colors.primary : theme.colors.disabled,
+            borderRadius: theme.borderRadius.button,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            paddingVertical: theme.spacing[4],
+            alignItems: 'center',
+            ...theme.shadows.card,
+          }}
+          onPress={handleJoinFamily}
+          disabled={inviteCode.length !== 6 || acceptInvitation.isPending}
+        >
+          {acceptInvitation.isPending ? (
+            <ActivityIndicator color={theme.colors.onFill} />
+          ) : (
+            <Text
+              style={{
+                fontSize: theme.textStyles.body.fontSize,
+                fontWeight: '700',
+                color: theme.colors.onFill,
+              }}
+            >
+              Присоединиться
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <ScrollView

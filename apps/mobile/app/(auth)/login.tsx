@@ -180,21 +180,6 @@ export default function LoginScreen() {
             Войти как ребёнок
           </Text>
         </TouchableOpacity>
-
-        {/* Join family link */}
-        <TouchableOpacity
-          style={{ marginTop: theme.spacing[2] }}
-          onPress={() => router.push('/(auth)/join-family')}
-          disabled={loading}
-        >
-          <Text style={{
-            fontSize: theme.textStyles.body.fontSize,
-            color: theme.colors.primary,
-            textDecorationLine: 'underline',
-          }}>
-            У меня есть код приглашения
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
