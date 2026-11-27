@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import * as AppleAuthentication from 'expo-apple-authentication';
@@ -20,16 +19,10 @@ GoogleSignin.configure({
   scopes: ['openid', 'profile', 'email'],
 });
 
-const DEV_USER = {
-  email: 'dev@saya.test',
-  password: 'devpass123',
-};
-
 export default function LoginScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
-  const [devLoading, setDevLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -77,37 +70,6 @@ export default function LoginScreen() {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDevLogin = async () => {
-    try {
-      setDevLoading(true);
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: DEV_USER.email,
-        password: DEV_USER.password,
-      });
-
-      if (signInError?.message?.includes('Invalid login credentials')) {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: DEV_USER.email,
-          password: DEV_USER.password,
-          options: { data: { dev_user: true } },
-        });
-        if (signUpError) throw signUpError;
-
-        const { error: retryError } = await supabase.auth.signInWithPassword({
-          email: DEV_USER.email,
-          password: DEV_USER.password,
-        });
-        if (retryError) throw retryError;
-      } else if (signInError) {
-        throw signInError;
-      }
-    } catch (err: unknown) {
-      Alert.alert('Dev Login Error', (err as Error).message);
-    } finally {
-      setDevLoading(false);
     }
   };
 
@@ -180,35 +142,6 @@ export default function LoginScreen() {
           style={{ width: '100%', height: 52 }}
           onPress={handleAppleSignIn}
         />
-
-        {__DEV__ && (
-          <TouchableOpacity
-            style={{
-              width: '100%',
-              backgroundColor: theme.tints.teal,
-              borderRadius: theme.borderRadius.button,
-              borderWidth: theme.borderWidth.regular,
-              borderColor: theme.colors.ink,
-              paddingVertical: theme.spacing[3],
-              alignItems: 'center',
-              marginTop: theme.spacing[4],
-            }}
-            onPress={handleDevLogin}
-            disabled={devLoading}
-          >
-            {devLoading ? (
-              <ActivityIndicator color={theme.colors.ink} />
-            ) : (
-              <Text style={{
-                fontSize: theme.textStyles.caption.fontSize,
-                fontWeight: '700',
-                color: theme.colors.ink,
-              }}>
-                🛠️ Dev Login (dev@saya.test)
-              </Text>
-            )}
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );
