@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -21,6 +22,7 @@ GoogleSignin.configure({
 
 export default function LoginScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
 
@@ -142,6 +144,57 @@ export default function LoginScreen() {
           style={{ width: '100%', height: 52 }}
           onPress={handleAppleSignIn}
         />
+
+        {/* Divider */}
+        <View style={{
+          width: '100%',
+          height: 1,
+          backgroundColor: theme.colors.border,
+          marginVertical: theme.spacing[4],
+        }} />
+
+        {/* Child login */}
+        <TouchableOpacity
+          style={{
+            width: '100%',
+            backgroundColor: theme.tints.sun,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            paddingVertical: theme.spacing[4],
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: theme.spacing[2],
+            ...theme.shadows.chip,
+          }}
+          onPress={() => router.push('/(auth)/child-login')}
+          disabled={loading}
+        >
+          <Text style={{ fontSize: 24 }}>🧒</Text>
+          <Text style={{
+            fontSize: theme.textStyles.body.fontSize,
+            fontWeight: '700',
+            color: theme.colors.ink,
+          }}>
+            Войти как ребёнок
+          </Text>
+        </TouchableOpacity>
+
+        {/* Join family link */}
+        <TouchableOpacity
+          style={{ marginTop: theme.spacing[2] }}
+          onPress={() => router.push('/(auth)/join-family')}
+          disabled={loading}
+        >
+          <Text style={{
+            fontSize: theme.textStyles.body.fontSize,
+            color: theme.colors.primary,
+            textDecorationLine: 'underline',
+          }}>
+            У меня есть код приглашения
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

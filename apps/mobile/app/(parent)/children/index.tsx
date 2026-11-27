@@ -88,8 +88,6 @@ export default function ChildrenListScreen() {
             <View
               key={child.id}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
                 backgroundColor: theme.colors.surface,
                 borderRadius: theme.borderRadius.card,
                 borderWidth: theme.borderWidth.regular,
@@ -99,41 +97,68 @@ export default function ChildrenListScreen() {
                 ...theme.shadows.card,
               }}
             >
-              <View style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: avatarColor,
-                borderWidth: theme.borderWidth.regular,
-                borderColor: theme.colors.ink,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: theme.spacing[3],
-              }}>
-                <Text style={{
-                  fontSize: 20,
-                  fontWeight: '800',
-                  color: theme.colors.ink,
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  backgroundColor: avatarColor,
+                  borderWidth: theme.borderWidth.regular,
+                  borderColor: theme.colors.ink,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: theme.spacing[3],
                 }}>
-                  {child.displayName.charAt(0).toUpperCase()}
-                </Text>
+                  <Text style={{
+                    fontSize: 20,
+                    fontWeight: '800',
+                    color: theme.colors.ink,
+                  }}>
+                    {child.displayName.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{
+                    fontSize: theme.textStyles.body.fontSize,
+                    fontWeight: '700',
+                    color: theme.colors.ink,
+                  }}>
+                    {child.displayName}
+                  </Text>
+                  <Text style={{
+                    fontSize: theme.textStyles.caption.fontSize,
+                    color: theme.colors.textSecondary,
+                    marginTop: 2,
+                  }}>
+                    {age} лет · {child.ageBand}
+                  </Text>
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{
-                  fontSize: theme.textStyles.body.fontSize,
-                  fontWeight: '700',
-                  color: theme.colors.ink,
-                }}>
-                  {child.displayName}
-                </Text>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: theme.tints.sky,
+                  borderRadius: theme.borderRadius.button,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.ink,
+                  paddingVertical: theme.spacing[2],
+                  paddingHorizontal: theme.spacing[3],
+                  marginTop: theme.spacing[3],
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: theme.spacing[2],
+                }}
+                onPress={() => router.push(`/(parent)/children/${child.id}/link-device`)}
+              >
+                <Text style={{ fontSize: 16 }}>📱</Text>
                 <Text style={{
                   fontSize: theme.textStyles.caption.fontSize,
-                  color: theme.colors.textSecondary,
-                  marginTop: 2,
+                  fontWeight: '600',
+                  color: theme.colors.ink,
                 }}>
-                  {age} лет · {child.ageBand}
+                  Подключить устройство
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           );
         })}

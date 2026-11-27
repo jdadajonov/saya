@@ -88,6 +88,88 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ padding: theme.spacing[5] }}>
+        {/* Family section */}
+        <Text style={{
+          fontSize: theme.textStyles.caption.fontSize,
+          fontWeight: '600',
+          color: theme.colors.textSecondary,
+          marginBottom: theme.spacing[2],
+          textTransform: 'uppercase',
+          letterSpacing: 1,
+        }}>
+          Семья
+        </Text>
+
+        {/* Invite parent */}
+        <TouchableOpacity
+          style={{
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            padding: theme.spacing[4],
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: theme.spacing[3],
+            ...theme.shadows.card,
+          }}
+          onPress={() => router.push('/(parent)/family/invite')}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[3] }}>
+            <Text style={{ fontSize: 20 }}>👨‍👩‍👧</Text>
+            <Text style={{
+              fontSize: theme.textStyles.body.fontSize,
+              fontWeight: '600',
+              color: theme.colors.ink,
+            }}>
+              Пригласить родителя
+            </Text>
+          </View>
+          <Text style={{ fontSize: 18, color: theme.colors.textSecondary }}>›</Text>
+        </TouchableOpacity>
+
+        {/* Children */}
+        <TouchableOpacity
+          style={{
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.borderRadius.card,
+            borderWidth: theme.borderWidth.regular,
+            borderColor: theme.colors.ink,
+            padding: theme.spacing[4],
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: theme.spacing[5],
+            ...theme.shadows.card,
+          }}
+          onPress={() => router.push('/(parent)/children')}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[3] }}>
+            <Text style={{ fontSize: 20 }}>🧒</Text>
+            <Text style={{
+              fontSize: theme.textStyles.body.fontSize,
+              fontWeight: '600',
+              color: theme.colors.ink,
+            }}>
+              Дети
+            </Text>
+          </View>
+          <Text style={{ fontSize: 18, color: theme.colors.textSecondary }}>›</Text>
+        </TouchableOpacity>
+
+        {/* Account section */}
+        <Text style={{
+          fontSize: theme.textStyles.caption.fontSize,
+          fontWeight: '600',
+          color: theme.colors.textSecondary,
+          marginBottom: theme.spacing[2],
+          textTransform: 'uppercase',
+          letterSpacing: 1,
+        }}>
+          Аккаунт
+        </Text>
+
         {/* Sign Out */}
         <TouchableOpacity
           style={{
