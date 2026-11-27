@@ -95,7 +95,9 @@
       "allCaptured": "Hammasi yegildi!",
       "checkmate": "Shox va mot!",
       "puzzleSolved": "To'g'ri!",
-      "notQuite": "Uncha emas. Yana urining!",
+      "notQuite": "Uncha emas",
+      "attemptsLeft": "urinish qoldi",
+      "solutionShown": "To'g'ri yurishni ko'ring:",
       "hints": {
         "back_rank": "Oxirgi qatorga qarang",
         "queen_mate": "Vazir mot qo'yishi mumkin",

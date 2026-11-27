@@ -83,7 +83,7 @@ export default function ChildRewardsScreen() {
     );
   }
 
-  const coins = balance?.coins ?? 24;
+  const coins = balance?.coins ?? 0;
   const pendingReward = pendingRequests[0];
   const pendingRewardTitle = pendingReward
     ? catalog.find((r) => r.id === pendingReward.rewardId)?.title ?? ''

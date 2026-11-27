@@ -7,6 +7,7 @@ import { Mascot } from '../../../src/ui/brand';
 import { useAuthStore } from '../../../src/features/family/stores/auth-store';
 import { ParentalGateModal } from '../../../src/features/family/components/parental-gate-modal';
 import { useTodaySessionsQuery, useRecordMood } from '../../../src/features/activities/hooks/use-activities';
+import { useChildStats } from '../../../src/features/family/hooks/use-child-stats';
 import type { SessionRow, ActivityRow } from '../../../src/features/activities/hooks/use-activities';
 import { MoodPicker } from '../../../src/features/activities/components/mood-picker';
 import type { MoodValue } from '../../../src/features/activities/components/mood-picker';
@@ -23,13 +24,14 @@ function formatDate(): string {
   return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
 }
 
-function WeekStreak({ theme }: { theme: ReturnType<typeof useTheme> }) {
+function WeekStreak({ theme, weeklyData }: { theme: ReturnType<typeof useTheme>; weeklyData: { day: string; minutes: number; missions: number }[] }) {
   const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
   const today = new Date().getDay();
   const todayIdx = today === 0 ? 6 : today - 1;
 
-  // Mock data - in real app would come from API
-  const completedDays = [true, true, true, true, false, false, false];
+  const defaultWeeklyData = days.map(d => ({ day: d, minutes: 0, missions: 0 }));
+  const data = weeklyData.length === 7 ? weeklyData : defaultWeeklyData;
+  const completedDays = data.map(d => d.minutes > 0);
   const completedCount = completedDays.filter(Boolean).length;
 
   return (
@@ -89,12 +91,12 @@ function WeekStreak({ theme }: { theme: ReturnType<typeof useTheme> }) {
   );
 }
 
-function LevelCard({ theme }: { theme: ReturnType<typeof useTheme> }) {
-  // Mock data - in real app would come from API
-  const level = 5;
-  const currentXp = 340;
-  const nextLevelXp = 500;
-  const progress = currentXp / nextLevelXp;
+function LevelCard({ theme, level, xp }: { theme: ReturnType<typeof useTheme>; level: number; xp: number }) {
+  const currentLevelXp = Math.pow(level - 1, 2) * 100;
+  const nextLevelXp = Math.pow(level, 2) * 100;
+  const xpInLevel = xp - currentLevelXp;
+  const xpNeeded = nextLevelXp - currentLevelXp;
+  const progress = xpNeeded > 0 ? xpInLevel / xpNeeded : 0;
 
   return (
     <View style={{
@@ -124,7 +126,7 @@ function LevelCard({ theme }: { theme: ReturnType<typeof useTheme> }) {
               Уровень {level}
             </Text>
             <Text style={{ fontSize: theme.textStyles.caption.fontSize, fontWeight: '700', color: theme.colors.ink }}>
-              {currentXp} / {nextLevelXp} XP
+              {xpInLevel} / {xpNeeded} XP
             </Text>
           </View>
           <View style={{
@@ -309,6 +311,7 @@ export default function ChildTodayScreen() {
   const todaySessions = useTodaySessionsQuery(activeChildId ?? null);
   const sessions = (todaySessions.data ?? []).filter((s) => s.status !== 'cancelled');
   const moodMut = useRecordMood();
+  const statsQuery = useChildStats(activeChildId ?? null);
 
   const handleGateSuccess = () => {
     setGateVisible(false);
@@ -325,8 +328,7 @@ export default function ChildTodayScreen() {
     setMoodSession(null);
   };
 
-  // Mock coins - in real app would come from API
-  const coins = 24;
+  const coins = statsQuery.data?.coins ?? 0;
 
   return (
     <ScrollView
@@ -398,12 +400,12 @@ export default function ChildTodayScreen() {
 
       {/* Level Card */}
       <View style={{ paddingHorizontal: theme.spacing[5], marginBottom: theme.spacing[4] }}>
-        <LevelCard theme={theme} />
+        <LevelCard theme={theme} level={statsQuery.data?.level ?? 1} xp={statsQuery.data?.xp ?? 0} />
       </View>
 
       {/* Week Streak */}
       <View style={{ paddingHorizontal: theme.spacing[5], marginBottom: theme.spacing[5] }}>
-        <WeekStreak theme={theme} />
+        <WeekStreak theme={theme} weeklyData={statsQuery.data?.weeklyData ?? []} />
       </View>
 
       {/* Study button */}

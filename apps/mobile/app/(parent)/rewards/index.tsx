@@ -9,6 +9,7 @@ import {
   useApproveRedemption,
 } from '../../../src/features/rewards/hooks/use-rewards';
 import { ParentTabBar } from '../../../src/features/family/components/parent-tab-bar';
+import { useChildrenStats } from '../../../src/features/family/hooks/use-child-stats';
 
 const AVATAR_COLORS = ['#5DD4C8', '#FFB6C1', '#B4A7FF', '#FFD93D'];
 
@@ -33,12 +34,15 @@ export default function ParentRewardsScreen() {
   const { family, user, children } = useAuthStore();
 
   const familyId = family?.id ?? null;
+  const childIds = children.map((c) => c.id);
   const catalogQuery = useRewardCatalogQuery(familyId);
   const pendingQuery = usePendingRedemptionsForFamily(familyId);
   const approveMut = useApproveRedemption();
+  const childrenStatsQuery = useChildrenStats(childIds);
 
   const catalog = catalogQuery.data ?? [];
   const pendingRequests = pendingQuery.data ?? [];
+  const childrenStats = childrenStatsQuery.data ?? {};
 
   const handleApprove = (redemptionId: string, approve: boolean) => {
     approveMut.mutate({
@@ -111,7 +115,7 @@ export default function ParentRewardsScreen() {
               const child = children.find((c) => c.id === req.childId);
               const childInitial = child?.displayName?.charAt(0).toUpperCase() ?? '?';
               const avatarColor = AVATAR_COLORS[idx % AVATAR_COLORS.length];
-              const childCoins = 24 + idx * 17; // Mock balance
+              const childCoins = childrenStats[req.childId]?.coins ?? 0;
 
               return (
                 <View

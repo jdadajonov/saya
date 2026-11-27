@@ -47,6 +47,35 @@ export function PuzzleCard({
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [startTime] = useState(Date.now());
   const [showHint, setShowHint] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [showSolution, setShowSolution] = useState(false);
+  const MAX_ATTEMPTS = 3;
+  const SOLUTION_DISPLAY_TIME = 5000;
+
+  const showSolutionOnBoard = useCallback(() => {
+    const solutionMove = isMateInOne
+      ? (payload as MateInOnePayload).solution
+      : (payload as PuzzlePayload).moves[0];
+
+    if (!solutionMove) return;
+
+    try {
+      const { Chess } = require('chess.js');
+      const chess = new Chess(payload.fen);
+      const move = chess.move(solutionMove);
+      if (move) {
+        setCurrentFen(chess.fen());
+        setLastMove({ from: move.from as ChessSquare, to: move.to as ChessSquare });
+        setCheckSquare(findCheckSquare(chess.fen()));
+      }
+    } catch {
+      // Fallback: just try makeMove
+      const newFen = makeMove(payload.fen, solutionMove);
+      if (newFen) {
+        setCurrentFen(newFen);
+      }
+    }
+  }, [payload, isMateInOne, findCheckSquare]);
 
   const scale = useSharedValue(1);
   const cardStyle = useAnimatedStyle(() => ({
@@ -62,6 +91,8 @@ export function PuzzleCard({
     setCheckSquare(null);
     setMoveHistory([]);
     setShowHint(false);
+    setAttempts(0);
+    setShowSolution(false);
     scale.value = withSequence(
       withTiming(0.95, { duration: 80 }),
       withSpring(1, { damping: 10, stiffness: 200 })
@@ -118,9 +149,21 @@ export function PuzzleCard({
 
               if (moveIndex < expectedMoves.length) {
                 const expectedMove = expectedMoves[moveIndex];
+
+                // Convert UCI to SAN for comparison
+                const { Chess } = require('chess.js');
+                const tempChess = new Chess(currentFen);
+                let userMoveSan = '';
+                try {
+                  const result = tempChess.move({ from: selectedSquare, to: square });
+                  if (result) userMoveSan = result.san;
+                } catch {}
+
+                // Compare both SAN and UCI formats
                 const moveMatches =
                   moveNotation === expectedMove ||
-                  moveNotation.toLowerCase() === expectedMove?.toLowerCase();
+                  userMoveSan === expectedMove ||
+                  userMoveSan.replace(/[+#]/g, '') === expectedMove?.replace(/[+#]/g, '');
 
                 if (moveMatches) {
                   if (newHistory.length === expectedMoves.length) {
@@ -133,17 +176,51 @@ export function PuzzleCard({
                     setTimeout(() => onAnswer(JSON.stringify(newHistory), true, responseMs), 800);
                   }
                 } else {
+                  const newAttempts = attempts + 1;
+                  setAttempts(newAttempts);
                   setFeedback('wrong');
                   void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                  const responseMs = Date.now() - startTime;
-                  setTimeout(() => onAnswer(JSON.stringify(newHistory), false, responseMs), 1000);
+
+                  if (newAttempts >= MAX_ATTEMPTS) {
+                    setShowSolution(true);
+                    setCurrentFen(payload.fen);
+                    setMoveHistory([]);
+                    setTimeout(() => showSolutionOnBoard(), 300);
+                    const responseMs = Date.now() - startTime;
+                    setTimeout(() => onAnswer(JSON.stringify(newHistory), false, responseMs), SOLUTION_DISPLAY_TIME);
+                  } else {
+                    setTimeout(() => {
+                      setFeedback('idle');
+                      setCurrentFen(payload.fen);
+                      setMoveHistory([]);
+                      setLastMove(null);
+                      setCheckSquare(null);
+                    }, 1000);
+                  }
                 }
               }
             } else {
+              const newAttempts = attempts + 1;
+              setAttempts(newAttempts);
               setFeedback('wrong');
               void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              const responseMs = Date.now() - startTime;
-              setTimeout(() => onAnswer(JSON.stringify(newHistory), false, responseMs), 1000);
+
+              if (newAttempts >= MAX_ATTEMPTS) {
+                setShowSolution(true);
+                setCurrentFen(payload.fen);
+                setMoveHistory([]);
+                setTimeout(() => showSolutionOnBoard(), 300);
+                const responseMs = Date.now() - startTime;
+                setTimeout(() => onAnswer(JSON.stringify(newHistory), false, responseMs), SOLUTION_DISPLAY_TIME);
+              } else {
+                setTimeout(() => {
+                  setFeedback('idle');
+                  setCurrentFen(payload.fen);
+                  setMoveHistory([]);
+                  setLastMove(null);
+                  setCheckSquare(null);
+                }, 1000);
+              }
             }
 
             setCheckSquare(findCheckSquare(newFen));
@@ -174,6 +251,8 @@ export function PuzzleCard({
       onAnswer,
       findCheckSquare,
       scale,
+      attempts,
+      showSolutionOnBoard,
     ]
   );
 
@@ -298,12 +377,42 @@ export function PuzzleCard({
         </View>
       )}
 
+      {/* Attempts indicator */}
+      {attempts > 0 && attempts < MAX_ATTEMPTS && feedback === 'idle' && (
+        <View
+          style={{
+            marginTop: theme.spacing[3],
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: theme.spacing[2],
+          }}
+        >
+          {[...Array(MAX_ATTEMPTS)].map((_, i) => (
+            <View
+              key={i}
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: i < attempts ? theme.colors.error : theme.colors.disabled,
+                borderWidth: 1,
+                borderColor: theme.colors.ink,
+              }}
+            />
+          ))}
+        </View>
+      )}
+
       {/* Feedback message */}
       {feedback !== 'idle' && (
         <View
           style={{
             marginTop: theme.spacing[4],
-            backgroundColor: feedback === 'correct' ? theme.tints.mint : theme.tints.wrong,
+            backgroundColor: feedback === 'correct'
+              ? theme.tints.mint
+              : showSolution
+              ? theme.tints.sun
+              : theme.tints.wrong,
             borderRadius: theme.borderRadius.md,
             padding: theme.spacing[4],
             borderWidth: theme.borderWidth.thin,
@@ -322,8 +431,23 @@ export function PuzzleCard({
               ? isMateInOne
                 ? t('learning.chess.checkmate')
                 : t('learning.chess.puzzleSolved')
-              : t('learning.chess.notQuite')}
+              : showSolution
+              ? t('learning.chess.solutionShown')
+              : `${t('learning.chess.notQuite')} (${MAX_ATTEMPTS - attempts} ${t('learning.chess.attemptsLeft')})`}
           </Text>
+          {showSolution && (
+            <Text
+              style={{
+                fontSize: theme.textStyles.body.fontSize,
+                color: theme.colors.ink,
+                marginTop: theme.spacing[2],
+              }}
+            >
+              {isMateInOne
+                ? (payload as MateInOnePayload).solution
+                : (payload as PuzzlePayload).moves.join(' → ')}
+            </Text>
+          )}
         </View>
       )}
     </Animated.View>

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import * as Notifications from 'expo-notifications';
 import { useTheme } from '../../../src/ui/theme-provider';
 import { useAuthStore } from '../../../src/features/family/stores/auth-store';
-import { useGoalsQuery, usePendingProposalsQuery, useSkillMasteryMap, useApproveGoal, usePendingVerificationsForChild, useApproveEvidence } from '../../../src/features/goals/hooks/use-goals';
+import { useGoalsQuery, usePendingProposalsQuery, useSkillMasteryMap, useApproveGoal, usePendingVerificationsForChild, useApproveEvidence, useDeleteGoal } from '../../../src/features/goals/hooks/use-goals';
 import { useActivitiesQuery, useDeleteActivity, useCreateActivity } from '../../../src/features/activities/hooks/use-activities';
 import type { RecurrenceRule } from '@saya/core';
 import { ParentTabBar } from '../../../src/features/family/components/parent-tab-bar';
@@ -129,10 +129,12 @@ function GoalProgressCard({
   goal,
   theme,
   onConfirmMilestone,
+  onDelete,
 }: {
   goal: Goal;
   theme: ReturnType<typeof useTheme>;
   onConfirmMilestone?: (milestoneId: string) => void;
+  onDelete?: (goalId: string) => void;
 }) {
   const completedCount = goal.milestones.filter((m) => m.completed).length;
   const total = goal.milestones.length;
@@ -163,15 +165,27 @@ function GoalProgressCard({
           fontSize: theme.textStyles.body.fontSize,
           fontWeight: '800',
           color: theme.colors.ink,
+          flex: 1,
         }}>
           {goal.title}
         </Text>
-        <Text style={{
-          fontSize: theme.textStyles.caption.fontSize,
-          color: theme.colors.textSecondary,
-        }}>
-          {isLearning ? 'Учёба' : 'Спорт'} · {completedCount} из {total}
-        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[2] }}>
+          <Text style={{
+            fontSize: theme.textStyles.caption.fontSize,
+            color: theme.colors.textSecondary,
+          }}>
+            {isLearning ? 'Учёба' : 'Спорт'} · {completedCount} из {total}
+          </Text>
+          {onDelete && (
+            <TouchableOpacity
+              onPress={() => onDelete(goal.id)}
+              style={{ padding: theme.spacing[1] }}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Text style={{ fontSize: 16, color: theme.colors.error }}>✕</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Milestones */}
@@ -684,6 +698,7 @@ export default function ParentGoalsScreen() {
   const pendingVerificationsQuery = usePendingVerificationsForChild(childId);
   const approveMut = useApproveGoal();
   const approveEvidenceMut = useApproveEvidence();
+  const deleteGoalMut = useDeleteGoal();
 
   const allGoals = (goalsQuery.data ?? []) as unknown as Goal[];
   const pendingProposals = pendingQuery.data ?? [];
@@ -742,6 +757,22 @@ export default function ParentGoalsScreen() {
     const activityId = lastDash > 0 ? id.substring(0, lastDash) : id;
     if (!activityId || !childId) return;
     deleteActivityMut.mutate({ activityId, childId });
+  };
+
+  const handleDeleteGoal = (goalId: string) => {
+    const goal = allGoals.find((g) => g.id === goalId);
+    Alert.alert(
+      'Удалить цель?',
+      `Цель "${goal?.title}" будет удалена вместе со всеми этапами.`,
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Удалить',
+          style: 'destructive',
+          onPress: () => deleteGoalMut.mutate(goalId),
+        },
+      ],
+    );
   };
 
   if (goalsQuery.isLoading || masteryQuery.isLoading || activitiesQuery.isLoading) {
@@ -1004,6 +1035,7 @@ export default function ParentGoalsScreen() {
             key={goal.id}
             goal={goal}
             theme={theme}
+            onDelete={handleDeleteGoal}
           />
         ))}
 

@@ -95,7 +95,9 @@
       "allCaptured": "All captured!",
       "checkmate": "Checkmate!",
       "puzzleSolved": "Correct!",
-      "notQuite": "Not quite. Try again!",
+      "notQuite": "Not quite",
+      "attemptsLeft": "attempts left",
+      "solutionShown": "Here's the correct move:",
       "hints": {
         "back_rank": "Look at the back rank",
         "queen_mate": "The queen can deliver mate",

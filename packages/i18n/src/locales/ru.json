@@ -100,7 +100,9 @@
       "allCaptured": "Все съедены!",
       "checkmate": "Шах и мат!",
       "puzzleSolved": "Правильно!",
-      "notQuite": "Не совсем. Попробуй ещё!",
+      "notQuite": "Не совсем",
+      "attemptsLeft": "попыток",
+      "solutionShown": "Смотри правильный ход:",
       "hints": {
         "back_rank": "Посмотри на последнюю горизонталь",
         "queen_mate": "Ферзь может поставить мат",
