@@ -9,6 +9,8 @@ export interface Child {
   birthYear: number;
   ageBand: '7-9' | '10-13';
   avatarKey: string;
+  avatarUrl?: string;
+  gender?: 'boy' | 'girl';
 }
 
 export interface Family {

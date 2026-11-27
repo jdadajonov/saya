@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,7 @@ import { useChildrenStats } from '../../src/features/family/hooks/use-child-stat
 import { usePendingRedemptionsForFamily } from '../../src/features/rewards/hooks/use-rewards';
 import { useConfirmSession } from '../../src/features/activities/hooks/use-activities';
 import { ParentTabBar } from '../../src/features/family/components/parent-tab-bar';
+import { getAvatarEmoji } from '../../src/features/family/components/avatar-picker';
 
 const AVATAR_COLORS = ['#5DD4C8', '#FFB6C1', '#B4A7FF', '#FFD93D', '#FF8C42'];
 
@@ -444,20 +446,24 @@ export default function ParentHomeScreen() {
                   width: 48,
                   height: 48,
                   borderRadius: 24,
-                  backgroundColor: avatarColor,
+                  backgroundColor: child.avatarUrl ? theme.colors.surface : avatarColor,
                   borderWidth: theme.borderWidth.regular,
                   borderColor: theme.colors.ink,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginRight: theme.spacing[3],
+                  overflow: 'hidden',
                 }}>
-                  <Text style={{
-                    fontSize: 20,
-                    fontWeight: '800',
-                    color: theme.colors.ink,
-                  }}>
-                    {child.displayName.charAt(0).toUpperCase()}
-                  </Text>
+                  {child.avatarUrl ? (
+                    <Image
+                      source={{ uri: child.avatarUrl }}
+                      style={{ width: 46, height: 46, borderRadius: 23 }}
+                    />
+                  ) : (
+                    <Text style={{ fontSize: 24 }}>
+                      {getAvatarEmoji(child.avatarKey)}
+                    </Text>
+                  )}
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{

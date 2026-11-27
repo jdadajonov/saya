@@ -4,12 +4,14 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../src/ui/theme-provider';
 import { useAuthStore } from '../../../src/features/family/stores/auth-store';
 import { useChildrenQuery } from '../../../src/features/family/hooks/use-family';
+import { getAvatarEmoji } from '../../../src/features/family/components/avatar-picker';
 
 const AVATAR_COLORS = ['#5DD4C8', '#FFB6C1', '#B4A7FF', '#FFD93D', '#FF8C42'];
 
@@ -102,20 +104,24 @@ export default function ChildrenListScreen() {
                   width: 48,
                   height: 48,
                   borderRadius: 24,
-                  backgroundColor: avatarColor,
+                  backgroundColor: child.avatarUrl ? theme.colors.surface : avatarColor,
                   borderWidth: theme.borderWidth.regular,
                   borderColor: theme.colors.ink,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginRight: theme.spacing[3],
+                  overflow: 'hidden',
                 }}>
-                  <Text style={{
-                    fontSize: 20,
-                    fontWeight: '800',
-                    color: theme.colors.ink,
-                  }}>
-                    {child.displayName.charAt(0).toUpperCase()}
-                  </Text>
+                  {child.avatarUrl ? (
+                    <Image
+                      source={{ uri: child.avatarUrl }}
+                      style={{ width: 46, height: 46, borderRadius: 23 }}
+                    />
+                  ) : (
+                    <Text style={{ fontSize: 24 }}>
+                      {getAvatarEmoji(child.avatarKey)}
+                    </Text>
+                  )}
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{
@@ -134,31 +140,58 @@ export default function ChildrenListScreen() {
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: theme.tints.sky,
-                  borderRadius: theme.borderRadius.button,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.ink,
-                  paddingVertical: theme.spacing[2],
-                  paddingHorizontal: theme.spacing[3],
-                  marginTop: theme.spacing[3],
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: theme.spacing[2],
-                }}
-                onPress={() => router.push(`/(parent)/children/${child.id}/link-device`)}
-              >
-                <Text style={{ fontSize: 16 }}>📱</Text>
-                <Text style={{
-                  fontSize: theme.textStyles.caption.fontSize,
-                  fontWeight: '600',
-                  color: theme.colors.ink,
-                }}>
-                  Подключить устройство
-                </Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', gap: theme.spacing[2], marginTop: theme.spacing[3] }}>
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    backgroundColor: theme.colors.surface,
+                    borderRadius: theme.borderRadius.button,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: theme.colors.ink,
+                    paddingVertical: theme.spacing[2],
+                    paddingHorizontal: theme.spacing[3],
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: theme.spacing[2],
+                  }}
+                  onPress={() => router.push(`/(parent)/children/${child.id}/edit`)}
+                >
+                  <Text style={{ fontSize: 16 }}>✏️</Text>
+                  <Text style={{
+                    fontSize: theme.textStyles.caption.fontSize,
+                    fontWeight: '600',
+                    color: theme.colors.ink,
+                  }}>
+                    Изменить
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    backgroundColor: theme.tints.sky,
+                    borderRadius: theme.borderRadius.button,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: theme.colors.ink,
+                    paddingVertical: theme.spacing[2],
+                    paddingHorizontal: theme.spacing[3],
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: theme.spacing[2],
+                  }}
+                  onPress={() => router.push(`/(parent)/children/${child.id}/link-device`)}
+                >
+                  <Text style={{ fontSize: 16 }}>📱</Text>
+                  <Text style={{
+                    fontSize: theme.textStyles.caption.fontSize,
+                    fontWeight: '600',
+                    color: theme.colors.ink,
+                  }}>
+                    Устройство
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           );
         })}

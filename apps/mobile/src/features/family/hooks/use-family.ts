@@ -28,7 +28,7 @@ export function useChildrenQuery(familyId: string | null) {
     queryFn: async (): Promise<Child[]> => {
       const { data, error } = await supabase
         .from('children')
-        .select('id, family_id, display_name, birth_year, age_band, avatar_key')
+        .select('id, family_id, display_name, birth_year, age_band, avatar_key, avatar_url, gender')
         .eq('family_id', familyId!)
         .order('created_at');
       if (error) throw error;
@@ -39,6 +39,8 @@ export function useChildrenQuery(familyId: string | null) {
         birthYear: row.birth_year as number,
         ageBand: row.age_band as Child['ageBand'],
         avatarKey: row.avatar_key as string,
+        avatarUrl: row.avatar_url as string | undefined,
+        gender: row.gender as Child['gender'],
       }));
     },
   });
@@ -113,6 +115,64 @@ export function useAddChild() {
     },
     onSuccess: (child) => {
       void queryClient.invalidateQueries({ queryKey: ['children', child.familyId] });
+    },
+  });
+}
+
+export function useUpdateChild() {
+  const queryClient = useQueryClient();
+  const setChildren = useAuthStore((s) => s.setChildren);
+  const children = useAuthStore((s) => s.children);
+
+  return useMutation({
+    mutationFn: async (params: {
+      childId: string;
+      displayName?: string;
+      birthYear?: number;
+      ageBand?: Child['ageBand'];
+      avatarKey?: string;
+      avatarUrl?: string;
+      gender?: Child['gender'];
+    }) => {
+      const updates: Record<string, unknown> = {};
+      if (params.displayName !== undefined) updates.display_name = params.displayName;
+      if (params.birthYear !== undefined) updates.birth_year = params.birthYear;
+      if (params.ageBand !== undefined) updates.age_band = params.ageBand;
+      if (params.avatarKey !== undefined) updates.avatar_key = params.avatarKey;
+      if (params.avatarUrl !== undefined) updates.avatar_url = params.avatarUrl;
+      if (params.gender !== undefined) updates.gender = params.gender;
+
+      const { error } = await supabase
+        .from('children')
+        .update(updates)
+        .eq('id', params.childId);
+
+      if (error) throw error;
+
+      const { data: child, error: fetchError } = await supabase
+        .from('children')
+        .select()
+        .eq('id', params.childId)
+        .single();
+      if (fetchError) throw fetchError;
+
+      return {
+        id: child.id,
+        familyId: child.family_id,
+        displayName: child.display_name,
+        birthYear: child.birth_year,
+        ageBand: child.age_band,
+        avatarKey: child.avatar_key,
+        avatarUrl: child.avatar_url,
+        gender: child.gender,
+      } as Child;
+    },
+    onSuccess: (updatedChild) => {
+      const newChildren = children.map((c) =>
+        c.id === updatedChild.id ? updatedChild : c
+      );
+      setChildren(newChildren);
+      void queryClient.invalidateQueries({ queryKey: ['children', updatedChild.familyId] });
     },
   });
 }
