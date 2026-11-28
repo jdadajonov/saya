@@ -47,7 +47,10 @@
     "sessionYes": "Ha",
     "sessionSkip": "O'tkazib yuborildi",
     "approveGoal": "Maqsadni tasdiqlash",
-    "declineGoal": "Rad etish"
+    "declineGoal": "Rad etish",
+    "leaveFamily": "Oiladan chiqish",
+    "leaveFamilyConfirm": "Ishonchingiz komilmi?",
+    "leaveFamilyDescription": "Siz bu oila ma'lumotlariga kirish huquqini yo'qotasiz."
   },
   "child": {
     "today": "Bugun",

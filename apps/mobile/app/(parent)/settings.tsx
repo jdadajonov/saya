@@ -11,15 +11,21 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../src/ui/theme-provider';
 import { useAuthStore } from '../../src/features/family/stores/auth-store';
-import { useDeleteFamily } from '../../src/features/family/hooks/use-family';
+import { useDeleteFamily, useMyMemberRole, useLeaveFamily } from '../../src/features/family/hooks/use-family';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const theme = useTheme();
   const signOut = useAuthStore((s) => s.signOut);
+  const familyId = useAuthStore((s) => s.family?.id) ?? null;
   const deleteFamily = useDeleteFamily();
+  const leaveFamily = useLeaveFamily();
+  const { data: role } = useMyMemberRole(familyId);
   const [deleting, setDeleting] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+
+  const canLeaveFamily = role && role !== 'owner';
 
   const handleSignOut = async () => {
     await signOut();
@@ -40,6 +46,30 @@ export default function SettingsScreen() {
               await deleteFamily.mutateAsync();
             } catch (err: unknown) {
               setDeleting(false);
+              Alert.alert(t('common.error'), (err as Error).message);
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handleLeaveFamily = () => {
+    if (!familyId) return;
+    Alert.alert(
+      t('parent.leaveFamilyConfirm'),
+      t('parent.leaveFamilyDescription'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('parent.leaveFamily'),
+          style: 'destructive',
+          onPress: async () => {
+            setLeaving(true);
+            try {
+              await leaveFamily.mutateAsync(familyId);
+            } catch (err: unknown) {
+              setLeaving(false);
               Alert.alert(t('common.error'), (err as Error).message);
             }
           },
@@ -140,7 +170,7 @@ export default function SettingsScreen() {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: theme.spacing[5],
+            marginBottom: theme.spacing[3],
             ...theme.shadows.card,
           }}
           onPress={() => router.push('/(parent)/children')}
@@ -157,6 +187,44 @@ export default function SettingsScreen() {
           </View>
           <Text style={{ fontSize: 18, color: theme.colors.textSecondary }}>›</Text>
         </TouchableOpacity>
+
+        {/* Leave Family - only for non-owners */}
+        {canLeaveFamily && (
+          <TouchableOpacity
+            style={{
+              backgroundColor: theme.colors.surface,
+              borderRadius: theme.borderRadius.card,
+              borderWidth: theme.borderWidth.regular,
+              borderColor: theme.colors.error,
+              padding: theme.spacing[4],
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: theme.spacing[5],
+            }}
+            onPress={handleLeaveFamily}
+            disabled={leaving}
+            accessibilityRole="button"
+            accessibilityLabel={t('parent.leaveFamily')}
+          >
+            {leaving ? (
+              <ActivityIndicator color={theme.colors.error} />
+            ) : (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing[2] }}>
+                <Text style={{ fontSize: 20 }}>🚪</Text>
+                <Text style={{
+                  fontSize: theme.textStyles.body.fontSize,
+                  fontWeight: '600',
+                  color: theme.colors.error,
+                }}>
+                  {t('parent.leaveFamily')}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        )}
+
+        {!canLeaveFamily && <View style={{ marginBottom: theme.spacing[2] }} />}
 
         {/* Account section */}
         <Text style={{

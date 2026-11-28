@@ -47,7 +47,10 @@
     "sessionYes": "Да",
     "sessionSkip": "Пропуск",
     "approveGoal": "Одобрить цель",
-    "declineGoal": "Отклонить"
+    "declineGoal": "Отклонить",
+    "leaveFamily": "Покинуть семью",
+    "leaveFamilyConfirm": "Вы уверены?",
+    "leaveFamilyDescription": "Вы больше не будете иметь доступ к данным этой семьи."
   },
   "child": {
     "today": "Сегодня",

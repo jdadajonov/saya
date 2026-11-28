@@ -203,3 +203,35 @@ export function useDeleteFamily() {
     onSuccess: () => void signOut(),
   });
 }
+
+export type MemberRole = 'owner' | 'parent' | 'coach';
+
+export function useMyMemberRole(familyId: string | null) {
+  const userId = useAuthStore((s) => s.user?.id);
+  return useQuery({
+    queryKey: ['member-role', familyId, userId],
+    enabled: !!familyId && !!userId,
+    queryFn: async (): Promise<MemberRole> => {
+      const { data, error } = await supabase
+        .from('members')
+        .select('role')
+        .eq('family_id', familyId!)
+        .eq('user_id', userId!)
+        .single();
+      if (error) throw error;
+      return data.role as MemberRole;
+    },
+  });
+}
+
+export function useLeaveFamily() {
+  const signOut = useAuthStore((s) => s.signOut);
+
+  return useMutation({
+    mutationFn: async (familyId: string) => {
+      const { error } = await supabase.rpc('leave_family', { p_family_id: familyId });
+      if (error) throw error;
+    },
+    onSuccess: () => void signOut(),
+  });
+}

@@ -47,7 +47,10 @@
     "sessionYes": "Yes",
     "sessionSkip": "Skip",
     "approveGoal": "Approve goal",
-    "declineGoal": "Decline"
+    "declineGoal": "Decline",
+    "leaveFamily": "Leave Family",
+    "leaveFamilyConfirm": "Are you sure?",
+    "leaveFamilyDescription": "You will no longer have access to this family's data."
   },
   "child": {
     "today": "Today",
