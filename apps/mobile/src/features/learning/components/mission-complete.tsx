@@ -322,7 +322,7 @@ export function MissionComplete({ result, onPlayAgain, onExit, timerSeconds, err
                 fontWeight: '800',
                 color: theme.colors.ink,
               }}>
-                +2
+                +{result.coinsEarned}
               </Text>
             </View>
           </View>

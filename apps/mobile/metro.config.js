@@ -5,7 +5,25 @@ const path = require('path');
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 
+const isExpoGo = !process.env.EAS_BUILD && !process.env.EXPO_DEV_CLIENT_NETWORK;
+
 const config = getDefaultConfig(projectRoot);
+
+if (isExpoGo) {
+  const originalResolveRequest = config.resolver.resolveRequest;
+  config.resolver.resolveRequest = (context, moduleName, platform) => {
+    if (moduleName === '@react-native-google-signin/google-signin') {
+      return {
+        filePath: path.resolve(projectRoot, 'src/platform/google-signin.stub.ts'),
+        type: 'sourceFile',
+      };
+    }
+    if (originalResolveRequest) {
+      return originalResolveRequest(context, moduleName, platform);
+    }
+    return context.resolveRequest(context, moduleName, platform);
+  };
+}
 
 // Watch all packages in the monorepo
 config.watchFolders = [workspaceRoot];

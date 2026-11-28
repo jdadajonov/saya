@@ -25,6 +25,7 @@ export interface MissionResult {
   speedBonusCount: number;
   selfCorrectedCount: number;
   xpEarned: number;
+  coinsEarned: number;
   stars: 1 | 2 | 3;
 }
 
@@ -116,6 +117,7 @@ export function calculateMissionXp(
     speedBonusCount,
     selfCorrectedCount,
     xpEarned: Math.round(xpEarned),
+    coinsEarned: config.coins.missionCompleted,
     stars: calculateStars(accuracy),
   };
 }

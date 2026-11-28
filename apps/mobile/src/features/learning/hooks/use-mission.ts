@@ -338,6 +338,7 @@ export function useSubmitAttempts() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['skill-stars'] });
+      void queryClient.invalidateQueries({ queryKey: ['balance'] });
     },
   });
 }
