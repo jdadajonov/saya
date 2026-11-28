@@ -24,12 +24,20 @@
     "welcomeMessage": "Войдите чтобы продолжить",
     "email": "Email",
     "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
     "signIn": "Войти",
     "signUp": "Зарегистрироваться",
     "forgotPassword": "Забыли пароль?",
     "signOut": "Выйти",
     "otpSentTitle": "Проверьте email",
-    "otpSentSubtitle": "Мы отправили ссылку на {{email}}"
+    "otpSentSubtitle": "Мы отправили ссылку на {{email}}",
+    "noAccount": "Нет аккаунта?",
+    "haveAccount": "Уже есть аккаунт?",
+    "createAccount": "Создать аккаунт",
+    "registerDescription": "Зарегистрируйтесь чтобы начать",
+    "fillAllFields": "Заполните все поля",
+    "passwordsDontMatch": "Пароли не совпадают",
+    "passwordTooShort": "Пароль должен быть не менее 6 символов"
   },
   "parent": {
     "home": "Главная",

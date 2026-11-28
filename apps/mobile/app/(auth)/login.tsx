@@ -5,6 +5,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +29,28 @@ export default function LoginScreen() {
   const router = useRouter();
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showEmailForm, setShowEmailForm] = useState(false);
+
+  const handleEmailSignIn = async () => {
+    if (!email.trim() || !password) {
+      Alert.alert(t('common.error'), t('auth.fillAllFields'));
+      return;
+    }
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) throw error;
+    } catch (err: unknown) {
+      Alert.alert(t('common.error'), (err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     try {
@@ -144,6 +170,103 @@ export default function LoginScreen() {
           style={{ width: '100%', height: 52 }}
           onPress={handleAppleSignIn}
         />
+
+        {/* Email Sign In Toggle */}
+        {!showEmailForm ? (
+          <TouchableOpacity
+            onPress={() => setShowEmailForm(true)}
+            style={{ marginTop: theme.spacing[2] }}
+          >
+            <Text style={{
+              fontSize: theme.textStyles.body.fontSize,
+              color: theme.colors.primary,
+              textDecorationLine: 'underline',
+            }}>
+              {t('auth.signInWithEmail')}
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: '100%', gap: theme.spacing[3], marginTop: theme.spacing[2] }}>
+            <TextInput
+              style={{
+                width: '100%',
+                backgroundColor: theme.colors.surface,
+                borderRadius: theme.borderRadius.card,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: theme.colors.ink,
+                paddingVertical: theme.spacing[3],
+                paddingHorizontal: theme.spacing[4],
+                fontSize: theme.textStyles.body.fontSize,
+                color: theme.colors.ink,
+              }}
+              placeholder={t('auth.email')}
+              placeholderTextColor={theme.colors.textSecondary}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <TextInput
+              style={{
+                width: '100%',
+                backgroundColor: theme.colors.surface,
+                borderRadius: theme.borderRadius.card,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: theme.colors.ink,
+                paddingVertical: theme.spacing[3],
+                paddingHorizontal: theme.spacing[4],
+                fontSize: theme.textStyles.body.fontSize,
+                color: theme.colors.ink,
+              }}
+              placeholder={t('auth.password')}
+              placeholderTextColor={theme.colors.textSecondary}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            <TouchableOpacity
+              style={{
+                width: '100%',
+                backgroundColor: theme.colors.primary,
+                borderRadius: theme.borderRadius.card,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: theme.colors.ink,
+                paddingVertical: theme.spacing[4],
+                alignItems: 'center',
+                ...theme.shadows.card,
+              }}
+              onPress={handleEmailSignIn}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color={theme.colors.surface} />
+              ) : (
+                <Text style={{
+                  fontSize: theme.textStyles.body.fontSize,
+                  fontWeight: '700',
+                  color: theme.colors.surface,
+                }}>
+                  {t('auth.signIn')}
+                </Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/(auth)/register')}
+              style={{ alignItems: 'center' }}
+            >
+              <Text style={{
+                fontSize: theme.textStyles.caption.fontSize,
+                color: theme.colors.textSecondary,
+              }}>
+                {t('auth.noAccount')}{' '}
+                <Text style={{ color: theme.colors.primary, fontWeight: '600' }}>
+                  {t('auth.signUp')}
+                </Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Divider */}
         <View style={{

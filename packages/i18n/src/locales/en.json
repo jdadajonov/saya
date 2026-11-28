@@ -24,12 +24,20 @@
     "welcomeMessage": "Sign in to continue",
     "email": "Email",
     "password": "Password",
+    "confirmPassword": "Confirm password",
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "forgotPassword": "Forgot password?",
     "signOut": "Sign Out",
     "otpSentTitle": "Check your email",
-    "otpSentSubtitle": "We sent a magic link to {{email}}"
+    "otpSentSubtitle": "We sent a magic link to {{email}}",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "createAccount": "Create Account",
+    "registerDescription": "Sign up to get started",
+    "fillAllFields": "Please fill in all fields",
+    "passwordsDontMatch": "Passwords don't match",
+    "passwordTooShort": "Password must be at least 6 characters"
   },
   "parent": {
     "home": "Home",

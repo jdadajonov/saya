@@ -24,12 +24,20 @@
     "welcomeMessage": "Davom etish uchun kiring",
     "email": "Email",
     "password": "Parol",
+    "confirmPassword": "Parolni tasdiqlang",
     "signIn": "Kirish",
     "signUp": "Ro'yxatdan o'tish",
     "forgotPassword": "Parolni unutdingizmi?",
     "signOut": "Chiqish",
     "otpSentTitle": "Emailni tekshiring",
-    "otpSentSubtitle": "{{email}} manziliga havola yubordik"
+    "otpSentSubtitle": "{{email}} manziliga havola yubordik",
+    "noAccount": "Hisobingiz yo'qmi?",
+    "haveAccount": "Hisobingiz bormi?",
+    "createAccount": "Hisob yaratish",
+    "registerDescription": "Boshlash uchun ro'yxatdan o'ting",
+    "fillAllFields": "Barcha maydonlarni to'ldiring",
+    "passwordsDontMatch": "Parollar mos kelmaydi",
+    "passwordTooShort": "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
   },
   "parent": {
     "home": "Bosh sahifa",
